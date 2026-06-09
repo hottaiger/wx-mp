@@ -1,48 +1,78 @@
-<view class="container">
-  <view class="section">
-    <view class="section__title">关联起点</view>
-    <view class="from">{{fromType}} #{{fromId}}</view>
+<view class="page">
+  <!-- 顶部 -->
+  <view class="head">
+    <view class="head__back" hover-class="press" bindtap="onBack">‹</view>
+    <view class="head__title">建立关联</view>
+    <view class="head__spacer"></view>
   </view>
 
-  <view class="section">
-    <view class="section__title">选择对端类型</view>
+  <!-- 起点 -->
+  <view class="from-card">
+    <view class="from-card__label">起点</view>
+    <view class="from-card__main">{{fromTypeLabel}} · {{fromSnippet}}</view>
+  </view>
+
+  <!-- 步骤 1：选对端类型 -->
+  <view class="step" wx:if="{{step >= 1}}">
+    <view class="step__no">1</view>
+    <view class="step__title">要连到什么？</view>
     <view class="chip-row">
       <view
         wx:for="{{types}}"
         wx:key="value"
-        class="chip {{toType === item.value ? 'chip--active' : ''}}"
+        class="chip {{toType === item.value ? 'chip--on' : ''}}"
         data-value="{{item.value}}"
+        hover-class="press"
         bindtap="onToTypeSelect"
       >{{item.label}}</view>
     </view>
   </view>
 
-  <view class="section">
-    <view class="section__title">选择关联类型</view>
+  <!-- 步骤 2：选关系 -->
+  <view class="step" wx:if="{{step >= 2}}">
+    <view class="step__no">2</view>
+    <view class="step__title">什么关系？</view>
     <view class="chip-row">
       <view
         wx:for="{{relCandidates}}"
         wx:key="value"
-        class="chip {{relType === item.value ? 'chip--active' : ''}} {{item.from !== fromType && item.from !== '*' ? 'chip--disabled' : ''}}"
+        class="chip {{relType === item.value ? 'chip--on' : ''}} {{item.from !== fromType && item.from !== '*' ? 'chip--off' : ''}}"
         data-value="{{item.value}}"
+        hover-class="press"
         bindtap="onRelTypeSelect"
       >{{item.label}}</view>
     </view>
   </view>
 
-  <view class="section">
-    <view class="section__title">选择对端</view>
-    <view class="empty" wx:if="{{!loading && !toList.length}}">暂无{{types[0].label}}记录</view>
+  <!-- 步骤 3：选对端 -->
+  <view class="step" wx:if="{{step >= 3}}">
+    <view class="step__no">3</view>
+    <view class="step__title">哪一个？</view>
+    <view class="empty" wx:if="{{!loading && !toList.length}}">
+      <view class="empty__sub">还没有{{toTypeLabel}}记录</view>
+    </view>
     <view
       wx:for="{{toList}}"
       wx:key="_id"
-      class="entity-card {{selectedToId === item._id ? 'entity-card--active' : ''}}"
+      class="entity-card {{selectedToId === item._id ? 'entity-card--on' : ''}}"
       data-index="{{index}}"
+      hover-class="press"
       bindtap="onEntitySelect"
     >
       <view class="entity-card__title">{{item.name || item.title}}</view>
+      <view wx:if="{{item.startAtText || item.boughtAtText}}" class="entity-card__meta">{{item.startAtText || item.boughtAtText}}</view>
     </view>
   </view>
 
-  <view class="submit-btn" bindtap="onSubmit">建立关联</view>
+  <!-- Dock -->
+  <view class="dock" wx:if="{{selectedToId && relType}}">
+    <view class="dock__summary">
+      <text>{{fromTypeLabel}}</text>
+      <text class="dock__arrow">→</text>
+      <text>{{toTypeLabel}}</text>
+      <text class="dock__arrow">·</text>
+      <text class="dock__rel">{{relLabel[relType] || relType}}</text>
+    </view>
+    <view class="dock__btn" hover-class="press" bindtap="onSubmit">建立关联</view>
+  </view>
 </view>

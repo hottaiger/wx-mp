@@ -1,50 +1,81 @@
-<view class="container">
+<view class="page">
+  <!-- Hero -->
   <view class="hero">
-    <view class="hero__week">{{weekLabel}}</view>
-    <view class="hero__number">{{meetings.totalDurationMin}}</view>
-    <view class="hero__unit">分钟会议 · {{meetings.count}} 场</view>
+    <view class="hero__row">
+      <view class="hero__crumb">本周 · {{weekLabel}}</view>
+    </view>
+    <view class="hero__big">
+      <text class="hero__num">{{meetings.totalDurationMin}}</text>
+      <text class="hero__unit">分钟</text>
+    </view>
+    <view class="hero__caption">{{meetings.count}} 场会议 · 共计会议时长</view>
   </view>
 
-  <view class="section">
-    <view class="section__title">7 天事项分布</view>
+  <!-- 7 天柱状 -->
+  <view class="card">
+    <view class="card__title">
+      <text>7 天事项分布</text>
+      <text class="card__sub">{{totalEvents}} 件</text>
+    </view>
     <view class="bars">
       <view wx:for="{{eventsByDay}}" wx:key="day" class="bar">
         <view class="bar__count">{{item.count}}</view>
-        <view class="bar__fill" style="height: {{item.count * 30}}rpx"></view>
-        <view class="bar__day">{{item.day}}</view>
+        <view class="bar__fill" style="height: {{item.barHeight}}rpx"></view>
+        <view class="bar__day">{{item.dayLabel}}</view>
       </view>
     </view>
   </view>
 
-  <view class="section">
-    <view class="section__title">Top 5 关联人物</view>
-    <view class="empty" wx:if="{{!topPersons.length}}">暂无</view>
+  <!-- Top 5 关联人物 -->
+  <view class="card">
+    <view class="card__title">
+      <text>本周常出现的人</text>
+      <text class="card__sub">Top {{topPersons.length || 0}}</text>
+    </view>
+    <view class="empty" wx:if="{{!topPersons.length}}">
+      <text class="empty__sub">还没有关联人物</text>
+    </view>
     <view
       wx:for="{{topPersons}}"
       wx:key="_id"
-      class="rank-card"
+      class="rank"
+      hover-class="press"
       data-id="{{item._id}}"
       data-type="person"
       bindtap="onEntityTap"
     >
-      <view class="rank-card__no">{{index + 1}}</view>
-      <view class="rank-card__name">{{item.name || '(已删除)'}}</view>
+      <view class="rank__no rank__no--{{index + 1}}">{{index + 1}}</view>
+      <view class="rank__main">
+        <view class="rank__name">{{item.name || '(已删除)'}}</view>
+        <view class="rank__traits" wx:if="{{item.traits && item.traits.length}}">{{item.traits.join(' · ')}}</view>
+      </view>
+      <view class="rank__arrow">›</view>
     </view>
   </view>
 
-  <view class="section">
-    <view class="section__title">Top 5 关联物品</view>
-    <view class="empty" wx:if="{{!topItems.length}}">暂无</view>
+  <!-- Top 5 物品 -->
+  <view class="card">
+    <view class="card__title">
+      <text>本周常出现的物</text>
+      <text class="card__sub">Top {{topItems.length || 0}}</text>
+    </view>
+    <view class="empty" wx:if="{{!topItems.length}}">
+      <text class="empty__sub">还没有关联物品</text>
+    </view>
     <view
       wx:for="{{topItems}}"
       wx:key="_id"
-      class="rank-card"
+      class="rank"
+      hover-class="press"
       data-id="{{item._id}}"
       data-type="item"
       bindtap="onEntityTap"
     >
-      <view class="rank-card__no">{{index + 1}}</view>
-      <view class="rank-card__name">{{item.name || '(已删除)'}}</view>
+      <view class="rank__no rank__no--{{index + 1}}">{{index + 1}}</view>
+      <view class="rank__main">
+        <view class="rank__name">{{item.name || '(已删除)'}}</view>
+      </view>
+      <view class="rank__arrow">›</view>
     </view>
   </view>
 </view>

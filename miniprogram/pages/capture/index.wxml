@@ -1,135 +1,145 @@
-<view class="container">
-  <view class="tabs">
+<view class="page">
+  <!-- 顶部 -->
+  <view class="head">
+    <view class="head__back" hover-class="press" bindtap="onBack">‹</view>
+    <view class="head__title">记一笔</view>
+    <view class="head__spacer"></view>
+  </view>
+
+  <!-- Segmented Tab -->
+  <view class="seg">
     <view
       wx:for="{{tabs}}"
       wx:key="key"
-      class="tab {{activeTab === item.key ? 'tab--active' : ''}}"
+      class="seg__item {{activeTab === item.key ? 'seg__item--on' : ''}}"
       data-key="{{item.key}}"
+      hover-class="press"
       bindtap="onTabTap"
     >{{item.label}}</view>
   </view>
 
-  <!-- 事件表单 -->
-  <block wx:if="{{activeTab === 'event'}}">
-    <view class="field">
-      <view class="field__label">标题 *</view>
-      <input class="field__input" placeholder="给这件事起个名字" data-field="title" value="{{form.title}}" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <view class="field__label">类型</view>
-      <view class="chip-row">
-        <view
-          wx:for="{{eventTypes}}"
-          wx:key="value"
-          class="chip {{form.type === item.value ? 'chip--active' : ''}}"
-          data-value="{{item.value}}"
-          bindtap="onEventTypeSelect"
-        >{{item.label}}</view>
-      </view>
-    </view>
-    <view class="field-row">
-      <view class="field field--half">
-        <view class="field__label">开始日期</view>
-        <picker mode="date" value="{{form.startDate}}" bindchange="onStartDateChange">
-          <view class="picker">{{form.startDate || '选择日期'}}</view>
-        </picker>
-      </view>
-      <view class="field field--half">
-        <view class="field__label">开始时间</view>
-        <picker mode="time" value="{{form.startTime}}" bindchange="onStartTimeChange">
-          <view class="picker">{{form.startTime || '选择时间'}}</view>
-        </picker>
-      </view>
-    </view>
-    <view class="field" wx:if="{{form.type === 'meeting'}}">
-      <view class="field__label">时长（分钟）</view>
-      <input class="field__input" type="number" data-field="durationMin" value="{{form.durationMin}}" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <view class="field__label">描述</view>
-      <textarea class="field__input" data-field="description" value="{{form.description}}" bindinput="onFieldInput" placeholder="详细说明..." />
-    </view>
-  </block>
-
-  <!-- 人物表单 -->
-  <block wx:if="{{activeTab === 'person'}}">
-    <view class="field">
-      <view class="field__label">姓名 *</view>
-      <input class="field__input" data-field="name" value="{{form.name}}" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <view class="field__label">特点（逗号分隔）</view>
-      <input class="field__input" data-field="traitsStr" value="{{form.traitsStr}}" bindinput="onFieldInput" placeholder="例：内敛, 爱喝咖啡" />
-    </view>
-    <view class="field">
-      <view class="field__label">标签（逗号分隔）</view>
-      <input class="field__input" data-field="tagsStr" value="{{form.tagsStr}}" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <view class="field__label">备注</view>
-      <textarea class="field__input" data-field="note" value="{{form.note}}" bindinput="onFieldInput" />
-    </view>
-  </block>
-
-  <!-- 物品表单 -->
-  <block wx:if="{{activeTab === 'item'}}">
-    <view class="field">
-      <view class="field__label">物品名 *</view>
-      <input class="field__input" data-field="name" value="{{form.name}}" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <view class="field__label">购买时间</view>
-      <picker mode="date" value="{{form.boughtDate}}" bindchange="onBoughtDateChange">
-        <view class="picker">{{form.boughtDate || '选择日期'}}</view>
-      </picker>
-    </view>
-    <view class="field">
-      <view class="field__label">属性</view>
-      <view class="attr-list">
-        <view wx:for="{{form.attrs}}" wx:key="key" wx:for-index="idx" class="attr-item">
-          <text class="attr-item__k">{{item.key}}</text>
-          <text class="attr-item__v">{{item.value}}</text>
-          <view class="attr-item__del" data-index="{{idx}}" bindtap="onRemoveAttr">×</view>
+  <!-- 表单 -->
+  <view class="form">
+    <!-- 事件 -->
+    <block wx:if="{{activeTab === 'event'}}">
+      <view class="group">
+        <view class="group__title">这件事</view>
+        <input class="form-input form-input--title" placeholder="给它一个名字" placeholder-class="form-input__ph" data-field="title" value="{{form.title}}" bindinput="onFieldInput" />
+        <view class="chip-row">
+          <view
+            wx:for="{{eventTypes}}"
+            wx:key="value"
+            class="chip {{form.type === item.value ? 'chip--on' : ''}}"
+            data-value="{{item.value}}"
+            hover-class="press"
+            bindtap="onEventTypeSelect"
+          >{{item.label}}</view>
         </view>
       </view>
-      <view class="attr-input">
-        <input class="field__input field__input--inline" placeholder="属性名" data-field="newAttrKey" value="{{form.newAttrKey}}" bindinput="onAttrKeyInput" />
-        <input class="field__input field__input--inline" placeholder="值" data-field="newAttrValue" value="{{form.newAttrValue}}" bindinput="onAttrValueInput" />
-        <view class="btn-mini" bindtap="onAddAttr">添加</view>
-      </view>
-    </view>
-    <view class="field">
-      <view class="field__label">标签（逗号分隔）</view>
-      <input class="field__input" data-field="tagsStr" value="{{form.tagsStr}}" bindinput="onFieldInput" />
-    </view>
-    <view class="field">
-      <view class="field__label">备注</view>
-      <textarea class="field__input" data-field="note" value="{{form.note}}" bindinput="onFieldInput" />
-    </view>
-  </block>
 
-  <!-- 提醒 -->
-  <view class="reminder">
-    <view class="reminder__head">
-      <switch checked="{{reminderEnabled}}" bindchange="onReminderToggle" color="#2c7be5" />
-      <text class="reminder__label">提醒我</text>
-    </view>
-    <block wx:if="{{reminderEnabled}}">
-      <view class="chip-row">
-        <view
-          wx:for="{{['5 分钟后', '20 分钟后', '1 小时后', '明早 9 点', '明晚 9 点']}}"
-          wx:key="*this"
-          class="chip {{reminderPreset === item ? 'chip--active' : ''}}"
-          data-value="{{item}}"
-          bindtap="onReminderPresetSelect"
-        >{{item}}</view>
+      <view class="group">
+        <view class="group__title">时间</view>
+        <view class="form-row form-row--split">
+          <view class="form-row__col">
+            <text class="form-row__label">日期</text>
+            <picker mode="date" value="{{form.startDate}}" bindchange="onStartDateChange">
+              <view class="picker {{form.startDate ? '' : 'picker--ph'}}">{{form.startDate || '选择'}}</view>
+            </picker>
+          </view>
+          <view class="form-row__col">
+            <text class="form-row__label">时间</text>
+            <picker mode="time" value="{{form.startTime}}" bindchange="onStartTimeChange">
+              <view class="picker {{form.startTime ? '' : 'picker--ph'}}">{{form.startTime || '选择'}}</view>
+            </picker>
+          </view>
+        </view>
+        <view class="form-row" wx:if="{{form.type === 'meeting'}}">
+          <text class="form-row__label">时长</text>
+          <input class="form-input form-input--inline" type="number" data-field="durationMin" value="{{form.durationMin}}" bindinput="onFieldInput" placeholder="分钟" />
+        </view>
       </view>
-      <view class="field">
-        <view class="field__label">或自定义</view>
-        <input class="field__input" placeholder="例：明晚 8 点 / 06-10 09:00" value="{{reminderCustom}}" bindinput="onReminderCustomInput" />
+
+      <view class="group">
+        <view class="group__title">补充</view>
+        <textarea class="form-input form-input--multi" placeholder="详细描述…" placeholder-class="form-input__ph" data-field="description" value="{{form.description}}" bindinput="onFieldInput" />
       </view>
     </block>
+
+    <!-- 人物 -->
+    <block wx:if="{{activeTab === 'person'}}">
+      <view class="group">
+        <view class="group__title">他/她</view>
+        <input class="form-input form-input--title" placeholder="姓名" placeholder-class="form-input__ph" data-field="name" value="{{form.name}}" bindinput="onFieldInput" />
+      </view>
+      <view class="group">
+        <view class="group__title">特点</view>
+        <input class="form-input" placeholder="逗号分隔，例：内敛, 爱喝咖啡" placeholder-class="form-input__ph" data-field="traitsStr" value="{{form.traitsStr}}" bindinput="onFieldInput" />
+      </view>
+      <view class="group">
+        <view class="group__title">标签 & 备注</view>
+        <input class="form-input" placeholder="标签，逗号分隔" placeholder-class="form-input__ph" data-field="tagsStr" value="{{form.tagsStr}}" bindinput="onFieldInput" />
+        <textarea class="form-input form-input--multi" placeholder="备注…" placeholder-class="form-input__ph" data-field="note" value="{{form.note}}" bindinput="onFieldInput" />
+      </view>
+    </block>
+
+    <!-- 物品 -->
+    <block wx:if="{{activeTab === 'item'}}">
+      <view class="group">
+        <view class="group__title">这个物品</view>
+        <input class="form-input form-input--title" placeholder="物品名" placeholder-class="form-input__ph" data-field="name" value="{{form.name}}" bindinput="onFieldInput" />
+      </view>
+      <view class="group">
+        <view class="group__title">购入</view>
+        <picker mode="date" value="{{form.boughtDate}}" bindchange="onBoughtDateChange">
+          <view class="picker {{form.boughtDate ? '' : 'picker--ph'}}">{{form.boughtDate || '选择购入日期'}}</view>
+        </picker>
+      </view>
+      <view class="group">
+        <view class="group__title">属性</view>
+        <view wx:if="{{form.attrs.length}}" class="attr-list">
+          <view wx:for="{{form.attrs}}" wx:key="key" wx:for-index="idx" class="attr-row">
+            <text class="attr-row__k">{{item.key}}</text>
+            <text class="attr-row__v">{{item.value}}</text>
+            <view class="attr-row__del" data-index="{{idx}}" hover-class="press" bindtap="onRemoveAttr">×</view>
+          </view>
+        </view>
+        <view class="attr-input">
+          <input class="form-input form-input--attr" placeholder="属性名" placeholder-class="form-input__ph" data-field="newAttrKey" value="{{form.newAttrKey}}" bindinput="onAttrKeyInput" />
+          <input class="form-input form-input--attr" placeholder="值" placeholder-class="form-input__ph" data-field="newAttrValue" value="{{form.newAttrValue}}" bindinput="onAttrValueInput" />
+          <view class="attr-add" hover-class="press" bindtap="onAddAttr">+</view>
+        </view>
+      </view>
+      <view class="group">
+        <view class="group__title">标签 & 备注</view>
+        <input class="form-input" placeholder="标签，逗号分隔" placeholder-class="form-input__ph" data-field="tagsStr" value="{{form.tagsStr}}" bindinput="onFieldInput" />
+        <textarea class="form-input form-input--multi" placeholder="备注…" placeholder-class="form-input__ph" data-field="note" value="{{form.note}}" bindinput="onFieldInput" />
+      </view>
+    </block>
+
+    <!-- 提醒 -->
+    <view class="group">
+      <view class="group__head">
+        <view class="group__title">提醒我</view>
+        <switch checked="{{reminderEnabled}}" bindchange="onReminderToggle" color="#2F4A3A" />
+      </view>
+      <block wx:if="{{reminderEnabled}}">
+        <view class="chip-row">
+          <view
+            wx:for="{{reminderPresets}}"
+            wx:key="*this"
+            class="chip {{reminderPreset === item ? 'chip--on' : ''}}"
+            data-value="{{item}}"
+            hover-class="press"
+            bindtap="onReminderPresetSelect"
+          >{{item}}</view>
+        </view>
+        <input class="form-input" placeholder="或自定义：明晚 8 点 / 06-10 09:00" placeholder-class="form-input__ph" value="{{reminderCustom}}" bindinput="onReminderCustomInput" />
+      </block>
+    </view>
   </view>
 
-  <view class="submit-btn {{submitting ? 'submit-btn--disabled' : ''}}" bindtap="onSubmit">保存</view>
+  <!-- 浮动提交 -->
+  <view class="dock">
+    <view class="dock__btn {{submitting ? 'dock__btn--disabled' : ''}}" hover-class="{{submitting ? '' : 'press'}}" bindtap="onSubmit">保存</view>
+  </view>
 </view>

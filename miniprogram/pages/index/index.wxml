@@ -1,53 +1,87 @@
-<view class="container">
-  <view class="header">
-    <view class="title">微录</view>
-    <view class="weekly-btn" bindtap="gotoWeekly">周复盘</view>
+<view class="page">
+  <!-- 顶部 hero：标题 + 副标题 + 统计 -->
+  <view class="hero">
+    <view class="hero__top">
+      <view class="hero__brand">微录</view>
+      <view class="hero__weekly" hover-class="press" bindtap="gotoWeekly">
+        <text class="hero__weekly-ic">◐</text>
+        <text>周复盘</text>
+      </view>
+    </view>
+    <view class="hero__title">{{heroTitle}}</view>
+    <view class="hero__sub">{{heroSub}}</view>
   </view>
 
-  <view class="tabs">
+  <!-- Segmented Tab -->
+  <view class="seg">
     <view
       wx:for="{{tabs}}"
       wx:key="key"
-      class="tab {{activeTab === item.key ? 'tab--active' : ''}}"
+      class="seg__item {{activeTab === item.key ? 'seg__item--on' : ''}}"
       data-key="{{item.key}}"
+      hover-class="press"
       bindtap="onTabTap"
-    >{{item.label}}</view>
+    >
+      <text>{{item.label}}</text>
+      <text class="seg__count" wx:if="{{counts[item.key] != null}}">{{counts[item.key]}}</text>
+    </view>
   </view>
 
+  <!-- 搜索条 -->
   <view class="search">
+    <view class="search__ic">⌕</view>
     <input
       class="search__input"
-      placeholder="搜索..."
+      placeholder="搜索{{tabs[tabIndex].label}}…"
+      placeholder-class="search__ph"
       value="{{keyword}}"
       bindinput="onSearchInput"
       confirm-type="search"
     />
   </view>
 
-  <view class="list" wx:if="{{list.length}}">
+  <!-- 列表 -->
+  <view class="list">
     <view
       wx:for="{{list}}"
       wx:key="_id"
-      class="entity-card"
+      class="card"
+      hover-class="card--press"
       data-id="{{item._id}}"
       data-type="{{activeTab}}"
       bindtap="onItemTap"
     >
-      <view class="entity-card__title">{{item.name || item.title}}</view>
-      <view class="entity-card__meta" wx:if="{{item.type}}">{{item.type}}</view>
-      <view class="entity-card__meta" wx:if="{{item.startAt}}">{{item.startAtText}}</view>
-      <view class="entity-card__meta" wx:if="{{item.boughtAt}}">购于 {{item.boughtAtText}}</view>
-      <view class="entity-card__tags" wx:if="{{item.tags && item.tags.length}}">
-        <text wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this" class="tag">{{t}}</text>
+      <view class="card__line">
+        <view class="card__title">{{item.name || item.title}}</view>
+        <view wx:if="{{activeTab === 'event' && item.type}}" class="chip chip--{{item.type}}">{{typeLabel[item.type]}}</view>
       </view>
+      <view class="card__meta" wx:if="{{activeTab === 'event' && item.startAtText}}">
+        <text class="card__meta-ic">◷</text>
+        <text>{{item.startAtText}}</text>
+        <text wx:if="{{item.durationMin}}"> · {{item.durationMin}} 分钟</text>
+      </view>
+      <view class="card__meta" wx:if="{{activeTab === 'item' && item.boughtAtText}}">
+        <text class="card__meta-ic">◈</text>
+        <text>购于 {{item.boughtAtText}}</text>
+      </view>
+      <view class="card__meta" wx:if="{{activeTab === 'person' && item.traits && item.traits.length}}">
+        <text wx:for="{{item.traits}}" wx:for-item="t" wx:key="*this" class="trait">{{t}}</text>
+      </view>
+      <view class="card__tags" wx:if="{{item.tags && item.tags.length}}">
+        <text wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this" class="tag">#{{t}}</text>
+      </view>
+    </view>
+
+    <!-- 空态 -->
+    <view class="empty" wx:if="{{!loading && !list.length}}">
+      <view class="empty__art">⌀</view>
+      <view class="empty__title">还没有{{tabs[tabIndex].label}}</view>
+      <view class="empty__sub">点右下角 · 记下第一笔</view>
     </view>
   </view>
 
-  <view class="empty" wx:elif="{{!loading}}">
-    <view class="empty__icon">∅</view>
-    <view class="empty__text">还没有{{tabs[0].label}}记录</view>
-    <view class="empty__hint">点右下角 + 录入</view>
+  <!-- 悬浮 FAB -->
+  <view class="fab" hover-class="fab--press" bindtap="onFabTap">
+    <text class="fab__plus">+</text>
   </view>
-
-  <view class="fab" bindtap="onFabTap">+</view>
 </view>

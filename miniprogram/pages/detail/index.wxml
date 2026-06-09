@@ -1,109 +1,142 @@
-<view class="container" wx:if="{{entity}}">
-  <view class="header">
-    <view class="title">{{entity.name || entity.title}}</view>
-    <view class="actions">
-      <view class="action" bindtap="onEditTap" wx:if="{{!isEditing}}">编辑</view>
-      <view class="action action--danger" bindtap="onDeleteTap" wx:if="{{!isEditing}}">删除</view>
+<view class="page" wx:if="{{entity}}">
+  <!-- 头部大标题 -->
+  <view class="head">
+    <view class="head__crumb">{{typeLabel}} · {{entity.type ? typeMap[entity.type] : ''}}</view>
+    <view class="head__title">{{entity.name || entity.title}}</view>
+    <view class="head__meta" wx:if="{{activeTab === 'event' && entity.startAtText}}">
+      <text class="head__meta-ic">◷</text>
+      <text>{{entity.startAtText}}</text>
+      <text wx:if="{{entity.durationMin}}"> · {{entity.durationMin}} 分钟</text>
     </view>
   </view>
 
-  <view class="tabs">
+  <!-- Segmented Tab -->
+  <view class="seg">
     <view
       wx:for="{{tabBar}}"
       wx:key="key"
-      class="tab {{activeTab === item.key ? 'tab--active' : ''}}"
+      class="seg__item {{activeTab2 === item.key ? 'seg__item--on' : ''}}"
       data-key="{{item.key}}"
+      hover-class="press"
       bindtap="onTabTap"
     >{{item.label}}</view>
   </view>
 
   <!-- 详情 Tab -->
-  <view class="section" wx:if="{{activeTab === 'detail'}}">
-    <view class="field" wx:if="{{!isEditing}}">
-      <view class="field__label">类型</view>
-      <view class="field__value">{{entity.type || '-'}}</view>
-    </view>
-    <view class="field" wx:if="{{!isEditing && entity.startAt}}">
-      <view class="field__label">开始时间</view>
-      <view class="field__value">{{entity.startAtText || entity.startAt}}</view>
-    </view>
-    <view class="field" wx:if="{{!isEditing && entity.durationMin != null}}">
-      <view class="field__label">时长（分钟）</view>
-      <view class="field__value">{{entity.durationMin}}</view>
-    </view>
-    <view class="field" wx:if="{{!isEditing && entity.boughtAt}}">
-      <view class="field__label">购买时间</view>
-      <view class="field__value">{{entity.boughtAtText || entity.boughtAt}}</view>
-    </view>
-    <view class="field" wx:if="{{!isEditing && entity.note}}">
-      <view class="field__label">备注</view>
-      <view class="field__value">{{entity.note}}</view>
-    </view>
-    <view class="field" wx:if="{{!isEditing && entity.description}}">
-      <view class="field__label">描述</view>
-      <view class="field__value">{{entity.description}}</view>
-    </view>
-    <view class="field" wx:if="{{!isEditing && entity.traits && entity.traits.length}}">
-      <view class="field__label">特点</view>
-      <view class="field__value">
-        <text wx:for="{{entity.traits}}" wx:for-item="t" wx:key="*this" class="tag">{{t}}</text>
+  <view wx:if="{{activeTab2 === 'detail'}}">
+    <view class="group" wx:if="{{!isEditing}}">
+      <view class="group__title">基本信息</view>
+      <view class="row-item" wx:if="{{entity.boughtAtText}}">
+        <text class="row-item__label">购入时间</text>
+        <text class="row-item__value">{{entity.boughtAtText}}</text>
       </view>
-    </view>
-    <view class="field" wx:if="{{!isEditing && entity.tags && entity.tags.length}}">
-      <view class="field__label">标签</view>
-      <view class="field__value">
-        <text wx:for="{{entity.tags}}" wx:for-item="t" wx:key="*this" class="tag">{{t}}</text>
+      <view class="row-item" wx:if="{{entity.durationMin != null}}">
+        <text class="row-item__label">时长</text>
+        <text class="row-item__value">{{entity.durationMin}} 分钟</text>
+      </view>
+      <view class="row-item" wx:if="{{entity.description}}">
+        <text class="row-item__label">描述</text>
+        <text class="row-item__value row-item__value--multi">{{entity.description}}</text>
+      </view>
+      <view class="row-item" wx:if="{{entity.note}}">
+        <text class="row-item__label">备注</text>
+        <text class="row-item__value row-item__value--multi">{{entity.note}}</text>
       </view>
     </view>
 
-    <!-- 编辑模式 -->
+    <view class="group" wx:if="{{!isEditing && entity.traits && entity.traits.length}}">
+      <view class="group__title">特点</view>
+      <view class="tags">
+        <text wx:for="{{entity.traits}}" wx:for-item="t" wx:key="*this" class="pill pill--brand">{{t}}</text>
+      </view>
+    </view>
+
+    <view class="group" wx:if="{{!isEditing && entity.attrs && objectKeys(entity.attrs).length}}">
+      <view class="group__title">属性</view>
+      <view class="row-item" wx:for="{{objectKeys(entity.attrs)}}" wx:key="*this" wx:for-item="k">
+        <text class="row-item__label">{{k}}</text>
+        <text class="row-item__value">{{entity.attrs[k]}}</text>
+      </view>
+    </view>
+
+    <view class="group" wx:if="{{!isEditing && entity.tags && entity.tags.length}}">
+      <view class="group__title">标签</view>
+      <view class="tags">
+        <text wx:for="{{entity.tags}}" wx:for-item="t" wx:key="*this" class="pill">#{{t}}</text>
+      </view>
+    </view>
+
+    <!-- 编辑表单 -->
     <block wx:if="{{isEditing}}">
-      <view class="field">
-        <view class="field__label">名称</view>
-        <input class="field__input" data-field="name" value="{{editForm.name}}" bindinput="onFieldInput" />
-      </view>
-      <view class="field">
-        <view class="field__label">备注</view>
-        <textarea class="field__input" data-field="note" value="{{editForm.note}}" bindinput="onFieldInput" />
-      </view>
-      <view class="field" wx:if="{{type === 'event'}}">
-        <view class="field__label">时长（分钟）</view>
-        <input class="field__input" type="number" data-field="durationMin" value="{{editForm.durationMin}}" bindinput="onFieldInput" />
-      </view>
-      <view class="field" wx:if="{{type === 'event'}}">
-        <view class="field__label">描述</view>
-        <textarea class="field__input" data-field="description" value="{{editForm.description}}" bindinput="onFieldInput" />
-      </view>
-      <view class="field" wx:if="{{type === 'person'}}">
-        <view class="field__label">特点（逗号分隔）</view>
-        <input class="field__input" data-field="traitsStr" value="{{editForm.traitsStr}}" bindinput="onFieldInput" />
-      </view>
-
-      <view class="btn-row">
-        <view class="btn btn--ghost" bindtap="onCancelEdit">取消</view>
-        <view class="btn btn--primary" bindtap="onSaveEdit">保存</view>
+      <view class="group">
+        <view class="group__title">编辑</view>
+        <view class="form-row">
+          <text class="form-row__label">{{type === 'event' ? '标题' : '名称'}}</text>
+          <input class="form-row__input" data-field="name" value="{{editForm.name}}" bindinput="onFieldInput" />
+        </view>
+        <view class="form-row" wx:if="{{type === 'event'}}">
+          <text class="form-row__label">时长</text>
+          <input class="form-row__input" type="number" data-field="durationMin" value="{{editForm.durationMin}}" bindinput="onFieldInput" placeholder="分钟" />
+        </view>
+        <view class="form-row" wx:if="{{type === 'event'}}">
+          <text class="form-row__label">描述</text>
+          <textarea class="form-row__input form-row__input--multi" data-field="description" value="{{editForm.description}}" bindinput="onFieldInput" />
+        </view>
+        <view class="form-row" wx:if="{{type === 'person'}}">
+          <text class="form-row__label">特点</text>
+          <input class="form-row__input" data-field="traitsStr" value="{{editForm.traitsStr}}" bindinput="onFieldInput" placeholder="逗号分隔" />
+        </view>
+        <view class="form-row">
+          <text class="form-row__label">备注</text>
+          <textarea class="form-row__input form-row__input--multi" data-field="note" value="{{editForm.note}}" bindinput="onFieldInput" />
+        </view>
       </view>
     </block>
+
+    <!-- 操作 -->
+    <view class="actions" wx:if="{{!isEditing}}">
+      <view class="action action--brand" hover-class="press" bindtap="onEditTap">编辑</view>
+      <view class="action action--danger" hover-class="press" bindtap="onDeleteTap">删除</view>
+    </view>
+    <view class="actions" wx:else>
+      <view class="action action--ghost" hover-class="press" bindtap="onCancelEdit">取消</view>
+      <view class="action action--brand" hover-class="press" bindtap="onSaveEdit">保存</view>
+    </view>
   </view>
 
   <!-- 关联 Tab -->
-  <view class="section" wx:if="{{activeTab === 'relation'}}">
-    <view class="add-relation" bindtap="onAddRelation">+ 添加关联</view>
-    <view class="empty" wx:if="{{!relations.length}}">
-      <view class="empty__text">暂无关联</view>
+  <view wx:if="{{activeTab2 === 'relation'}}">
+    <view class="add-block" hover-class="press" bindtap="onAddRelation">
+      <text class="add-block__plus">+</text>
+      <text>添加一条关联</text>
     </view>
-    <view
-      wx:for="{{relations}}"
-      wx:key="_id"
-      class="rel-card"
-      data-id="{{item.fromId === id ? item.toId : item.fromId}}"
-      data-type="{{item.fromId === id ? item.toType : item.fromType}}"
-      bindtap="onRelationTap"
-    >
-      <view class="rel-card__rel">{{item.relType}}</view>
-      <view class="rel-card__arrow">→</view>
+
+    <view class="empty" wx:if="{{!relations.length}}">
+      <view class="empty__art">⌘</view>
+      <view class="empty__title">还没有关联</view>
+      <view class="empty__sub">把这条记录连到别的人、事、物</view>
+    </view>
+
+    <view wx:if="{{relations.length}}">
+      <view
+        wx:for="{{relations}}"
+        wx:key="_id"
+        class="rel-card"
+        hover-class="card--press"
+        data-id="{{item.fromId === id ? item.toId : item.fromId}}"
+        data-type="{{item.fromId === id ? item.toType : item.fromType}}"
+        bindtap="onRelationTap"
+      >
+        <view class="rel-card__line">
+          <text class="rel-card__rel">{{relLabel[item.relType] || item.relType}}</text>
+          <text class="rel-card__arrow">→</text>
+        </view>
+        <view class="rel-card__opposite">{{typeMap[item.fromId === id ? item.toType : item.fromType]}}</view>
+      </view>
     </view>
   </view>
 </view>
 
-<view class="loading" wx:elif="{{loading}}">加载中...</view>
+<view class="loading" wx:elif="{{loading}}">
+  <text>载入中…</text>
+</view>

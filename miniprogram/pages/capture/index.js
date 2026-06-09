@@ -15,13 +15,7 @@ const EVENT_TYPES = [
   { value: 'generic', label: '其他' },
 ];
 
-const RELATIVE_PRESETS = [
-  { label: '5 分钟后', minutes: 5 },
-  { label: '20 分钟后', minutes: 20 },
-  { label: '1 小时后', minutes: 60 },
-  { label: '明早 9 点', tomorrow: '09:00' },
-  { label: '明晚 9 点', tomorrow: '21:00' },
-];
+
 
 Page({
   data: {
@@ -41,8 +35,11 @@ Page({
     reminderEnabled: false,
     reminderPreset: '',
     reminderCustom: '',
+    reminderPresets: ['5 分钟后', '20 分钟后', '1 小时后', '明早 9 点', '明晚 9 点'],
     submitting: false,
   },
+
+  onBack() { wx.navigateBack(); },
 
   onLoad(opts) {
     const tab = TABS.find((t) => t.key === opts.type) ? opts.type : 'event';

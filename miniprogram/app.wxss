@@ -1,27 +1,71 @@
-/**app.wxss**/
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-} 
-
-button {
-  background: initial;
-}
-
-button:focus{
-  outline: 0;
-}
-
-button::after{
-  border: none;
-}
-
+/* ============================================
+ * 微录 — Design Tokens
+ * 移动端优先；rpx 基准 750
+ * ============================================ */
 
 page {
-  background: #f6f6f6;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  /* —— 色彩 —— */
+  --bg: #FAFAF7;             /* 米白底 */
+  --bg-elevated: #FFFFFF;     /* 卡片底 */
+  --bg-subtle: #F2F0EA;       /* 次级底 */
+  --line: #ECE9DF;            /* 分割线 */
+  --line-strong: #D9D5C7;
+
+  --ink-1: #1C1B17;           /* 主文字 */
+  --ink-2: #54534B;           /* 次文字 */
+  --ink-3: #8E8B7E;           /* 辅助文字 */
+  --ink-4: #B5B1A1;           /* 占位 */
+
+  --brand: #2F4A3A;           /* 深墨绿（主色） */
+  --brand-soft: #E7ECDF;      /* 主色 8% */
+  --accent: #C9622A;          /* 焦糖橙（点缀） */
+  --accent-soft: #F6E5D5;
+  --danger: #B33A3A;          /* 错误 */
+  --danger-soft: #F2DCDC;
+
+  /* —— 字号 —— */
+  --t-display: 56rpx;         /* 大数字 */
+  --t-h1: 44rpx;
+  --t-h2: 36rpx;
+  --t-h3: 32rpx;
+  --t-body: 28rpx;
+  --t-meta: 24rpx;
+  --t-micro: 22rpx;
+
+  /* —— 间距 —— */
+  --s-1: 8rpx;
+  --s-2: 16rpx;
+  --s-3: 24rpx;
+  --s-4: 32rpx;
+  --s-5: 40rpx;
+  --s-6: 56rpx;
+
+  /* —— 圆角 —— */
+  --r-sm: 12rpx;
+  --r-md: 20rpx;
+  --r-lg: 28rpx;
+  --r-pill: 999rpx;
+
+  /* —— 阴影 —— */
+  --sh-1: 0 1rpx 2rpx rgba(28, 27, 23, 0.04), 0 8rpx 24rpx rgba(28, 27, 23, 0.04);
+  --sh-2: 0 2rpx 4rpx rgba(28, 27, 23, 0.06), 0 16rpx 48rpx rgba(28, 27, 23, 0.08);
+  --sh-fab: 0 12rpx 32rpx rgba(47, 74, 58, 0.32);
+
+  background: var(--bg);
+  color: var(--ink-1);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* 通用工具类 */
+.row { display: flex; align-items: center; }
+.col { display: flex; flex-direction: column; }
+.between { justify-content: space-between; }
+.gap-1 { gap: var(--s-1); }
+.gap-2 { gap: var(--s-2); }
+.gap-3 { gap: var(--s-3); }
+
+.muted { color: var(--ink-2); }
+.dim { color: var(--ink-3); }
