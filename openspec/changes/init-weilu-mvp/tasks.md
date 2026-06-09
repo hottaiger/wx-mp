@@ -7,10 +7,10 @@
 
 ## 2. 数据层云函数（cloud-data-layer）
 
-- [ ] 2.1 在 `cloudfunctions/quickstartFunctions` 下按域拆分子函数目录 `person / event / item / relation / reminder / weeklyStats`，每目录一个 `index.js` + `package.json`
-- [ ] 2.2 实现统一 `withAuth` 工具：注入 OPENID、捕获错误并返回标准错误码
-- [ ] 2.3 实现统一 `crud` 基类：`create / update / list / remove`，list 支持 `where/page/pageSize/field/orderBy`
-- [ ] 2.4 在 `cloudfunctions/quickstartFunctions/index.js` 注册 router，把不同 action 派发到对应域
+- [x] 2.1 在 `cloudfunctions/quickstartFunctions` 下按域拆分子函数目录 `person / event / item / relation / reminder / weeklyStats`，每目录一个 `index.js` + `package.json`
+- [x] 2.2 实现统一 `withAuth` 工具：注入 OPENID、捕获错误并返回标准错误码
+- [x] 2.3 实现统一 `crud` 基类：`create / update / list / remove`，list 支持 `where/page/pageSize/field/orderBy`
+- [x] 2.4 在 `cloudfunctions/quickstartFunctions/index.js` 注册 router，把不同 action 派发到对应域
 
 ## 3. 人物实体（person-entity）
 
