@@ -1,0 +1,21 @@
+{
+  "change": "init-weilu-mvp",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "4b6c9f0a8c56600c367228dfdcc8da76db35e16d0ef9736aa2017635cb6bccae",
+  "files": [
+    { "path": "openspec/changes/init-weilu-mvp/proposal.md", "sha256": "bee9a66c81a7b01368967ec615f5dd6f67d1e0140462feb61716bd7f84b2573e" },
+    { "path": "openspec/changes/init-weilu-mvp/design.md", "sha256": "9449258d0431a4d9abeb8ba22f405f8e3c75ce5468dfc37caabe016edc10c684" },
+    { "path": "openspec/changes/init-weilu-mvp/tasks.md", "sha256": "b69178a8176cb6d6e86727be2d65443f1373c848d95ffc433ae30d5e166ece0d" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/cloud-data-layer/spec.md", "sha256": "05b34a37a3cf62d36762cf30d482f1f79cd1174e616b053e3dd50279147a9b49" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/entity-relation/spec.md", "sha256": "d2ac2a709139bf86666c46eb3dcf8274c3d2992aa3a3becf4295cd764d6906eb" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/event-entity/spec.md", "sha256": "70e6f573c77ba75ff68a5a06e9c7f3452d75fc7457ddb7e921ac775f79632e24" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/item-entity/spec.md", "sha256": "21a07de5a4f47612592bfb93659355cb9730b8afa7cc3ab9968f1a8270247fe2" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/person-entity/spec.md", "sha256": "2aa473380a19915f283c9c31eaf2d95e9f1860b62e319e05f3172e5ef533f78e" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/quick-capture/spec.md", "sha256": "a976483b0e2da92d9f270c41ec9e6bfc8bdaf52cd533fbef6986d14825190deb" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/time-reminder/spec.md", "sha256": "5549dab85882ef823d4f271052183a0e48e12be0c4b6b6b13a920a522f977d4f" },
+    { "path": "openspec/changes/init-weilu-mvp/specs/weekly-review/spec.md", "sha256": "011ba3703559a86456099196d5eabe2154083c5696f5248e1676264a420aab50" }
+  ]
+}
