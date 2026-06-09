@@ -1,9 +1,9 @@
 ## 1. 项目脚手架与基础配置
 
-- [ ] 1.1 在 `miniprogram/app.json` 替换 pages 列表为 `[pages/index/index, pages/capture/index, pages/detail/index, pages/weekly-review/index, pages/relation/index]`，更新 `navigationBarTitleText: "微录"`
-- [ ] 1.2 在 `project.config.json` 调整 `miniprogramRoot`、appid 占位，配置云开发环境 id
-- [ ] 1.3 删除 quickstart 示例：`pages/example/index`、示例云函数逻辑、README 中 quickstart 描述
-- [ ] 1.4 在云开发控制台创建集合 `persons / events / items / relations / reminders`，并为 `events.startAt`、`relations.fromId`、`relations.toId`、`reminders.sendAt` 建索引
+- [x] 1.1 在 `miniprogram/app.json` 替换 pages 列表为 `[pages/index/index, pages/capture/index, pages/detail/index, pages/weekly-review/index, pages/relation/index]`，更新 `navigationBarTitleText: "微录"`
+- [x] 1.2 在 `project.config.json` 调整 `miniprogramRoot`、appid 占位，配置云开发环境 id
+- [x] 1.3 删除 quickstart 示例：`pages/example/index`、示例云函数逻辑、README 中 quickstart 描述
+- [x] 1.4 在云开发控制台创建集合 `persons / events / items / relations / reminders`，并为 `events.startAt`、`relations.fromId`、`relations.toId`、`reminders.sendAt` 建索引
 
 ## 2. 数据层云函数（cloud-data-layer）
 
