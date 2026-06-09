@@ -76,7 +76,7 @@
       </view>
       <view class="field" wx:if="{{type === 'person'}}">
         <view class="field__label">特点（逗号分隔）</view>
-        <input class="field__input" data-field="traitsStr" value="{{(editForm.traits || []).join(',')}}" bindinput="onFieldInput" />
+        <input class="field__input" data-field="traitsStr" value="{{editForm.traitsStr}}" bindinput="onFieldInput" />
       </view>
 
       <view class="btn-row">

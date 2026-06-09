@@ -54,7 +54,13 @@ Page({
   },
 
   onEditTap() {
-    this.setData({ isEditing: true, editForm: { ...this.data.entity } });
+    const e = this.data.entity || {};
+    const editForm = {
+      ...e,
+      traitsStr: Array.isArray(e.traits) ? e.traits.join(',') : '',
+      tagsStr: Array.isArray(e.tags) ? e.tags.join(',') : '',
+    };
+    this.setData({ isEditing: true, editForm });
   },
 
   onCancelEdit() {
@@ -68,7 +74,17 @@ Page({
 
   async onSaveEdit() {
     const { type, id } = this.data;
-    const payload = { ...this.data.editForm };
+    const f = this.data.editForm;
+    const payload = { ...f };
+    // 反向拼接字符串到数组
+    if (typeof payload.traitsStr === 'string') {
+      payload.traits = payload.traitsStr.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
+      delete payload.traitsStr;
+    }
+    if (typeof payload.tagsStr === 'string') {
+      payload.tags = payload.tagsStr.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
+      delete payload.tagsStr;
+    }
     delete payload._id;
     delete payload._openid;
     try {
