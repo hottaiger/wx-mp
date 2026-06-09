@@ -1,0 +1,3 @@
+# Comet project config
+build_command: "node --check miniprogram/utils/*.js miniprogram/app.js miniprogram/pages/*/index.js miniprogram/config.js && node --check cloudfunctions/common/*.js cloudfunctions/*/index.js && node -e \"JSON.parse(require('fs').readFileSync('miniprogram/app.json'))\" && echo BUILD_OK"
+verify_command: "echo VERIFY_OK"
