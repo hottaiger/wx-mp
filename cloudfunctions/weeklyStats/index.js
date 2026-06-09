@@ -3,7 +3,7 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
-const { withAuth, errors } = require('../common/index.js');
+const { withAuth, errors } = require('./common/index.js');
 
 function getWeekRange(weekStartIso, weekEndIso) {
   const ws = new Date(weekStartIso).getTime();

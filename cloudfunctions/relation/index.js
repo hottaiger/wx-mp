@@ -2,7 +2,7 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
-const { withAuth, errors } = require('../common/index.js');
+const { withAuth, errors } = require('./common/index.js');
 
 const VALID_TYPES = new Set(['person', 'event', 'item']);
 const VALID_REL_TYPES = new Set([

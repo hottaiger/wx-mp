@@ -2,7 +2,7 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
-const { withAuth, crud, errors } = require('../common/index.js');
+const { withAuth, crud, errors } = require('./common/index.js');
 
 const _ = db.command;
 const COLLECTION = 'events';
