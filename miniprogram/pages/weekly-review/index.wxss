@@ -1,0 +1,17 @@
+.container { padding: 24rpx; background: #f6f6f6; min-height: 100vh; }
+.hero { background: linear-gradient(135deg, #2c7be5, #4a9dff); color: #fff; padding: 48rpx 32rpx; border-radius: 16rpx; margin-bottom: 24rpx; }
+.hero__week { font-size: 26rpx; opacity: 0.9; }
+.hero__number { font-size: 120rpx; font-weight: 700; line-height: 1.2; margin: 16rpx 0; }
+.hero__unit { font-size: 26rpx; opacity: 0.9; }
+.section { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; }
+.section__title { font-size: 28rpx; color: #1a1a1a; font-weight: 500; margin-bottom: 20rpx; }
+.bars { display: flex; justify-content: space-around; align-items: flex-end; height: 320rpx; padding: 20rpx 0; }
+.bar { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.bar__count { font-size: 22rpx; color: #888; }
+.bar__fill { width: 50rpx; background: #2c7be5; border-radius: 6rpx; margin-top: 4rpx; min-height: 4rpx; }
+.bar__day { font-size: 20rpx; color: #999; margin-top: 8rpx; }
+.rank-card { display: flex; align-items: center; padding: 16rpx 0; border-bottom: 1rpx solid #f0f0f0; }
+.rank-card:last-child { border-bottom: none; }
+.rank-card__no { width: 50rpx; height: 50rpx; line-height: 50rpx; text-align: center; background: #eef3fb; color: #2c7be5; border-radius: 50%; font-size: 26rpx; margin-right: 16rpx; }
+.rank-card__name { font-size: 30rpx; color: #1a1a1a; }
+.empty { text-align: center; color: #999; padding: 30rpx 0; }

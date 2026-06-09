@@ -1,0 +1,48 @@
+<view class="container">
+  <view class="section">
+    <view class="section__title">关联起点</view>
+    <view class="from">{{fromType}} #{{fromId}}</view>
+  </view>
+
+  <view class="section">
+    <view class="section__title">选择对端类型</view>
+    <view class="chip-row">
+      <view
+        wx:for="{{types}}"
+        wx:key="value"
+        class="chip {{toType === item.value ? 'chip--active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onToTypeSelect"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section__title">选择关联类型</view>
+    <view class="chip-row">
+      <view
+        wx:for="{{relCandidates}}"
+        wx:key="value"
+        class="chip {{relType === item.value ? 'chip--active' : ''}} {{item.from !== fromType && item.from !== '*' ? 'chip--disabled' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onRelTypeSelect"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section__title">选择对端</view>
+    <view class="empty" wx:if="{{!loading && !toList.length}}">暂无{{types[0].label}}记录</view>
+    <view
+      wx:for="{{toList}}"
+      wx:key="_id"
+      class="entity-card {{selectedToId === item._id ? 'entity-card--active' : ''}}"
+      data-index="{{index}}"
+      bindtap="onEntitySelect"
+    >
+      <view class="entity-card__title">{{item.name || item.title}}</view>
+    </view>
+  </view>
+
+  <view class="submit-btn" bindtap="onSubmit">建立关联</view>
+</view>

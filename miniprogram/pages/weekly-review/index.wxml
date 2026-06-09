@@ -1,0 +1,50 @@
+<view class="container">
+  <view class="hero">
+    <view class="hero__week">{{weekLabel}}</view>
+    <view class="hero__number">{{meetings.totalDurationMin}}</view>
+    <view class="hero__unit">分钟会议 · {{meetings.count}} 场</view>
+  </view>
+
+  <view class="section">
+    <view class="section__title">7 天事项分布</view>
+    <view class="bars">
+      <view wx:for="{{eventsByDay}}" wx:key="day" class="bar">
+        <view class="bar__count">{{item.count}}</view>
+        <view class="bar__fill" style="height: {{item.count * 30}}rpx"></view>
+        <view class="bar__day">{{item.day}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section__title">Top 5 关联人物</view>
+    <view class="empty" wx:if="{{!topPersons.length}}">暂无</view>
+    <view
+      wx:for="{{topPersons}}"
+      wx:key="_id"
+      class="rank-card"
+      data-id="{{item._id}}"
+      data-type="person"
+      bindtap="onEntityTap"
+    >
+      <view class="rank-card__no">{{index + 1}}</view>
+      <view class="rank-card__name">{{item.name || '(已删除)'}}</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section__title">Top 5 关联物品</view>
+    <view class="empty" wx:if="{{!topItems.length}}">暂无</view>
+    <view
+      wx:for="{{topItems}}"
+      wx:key="_id"
+      class="rank-card"
+      data-id="{{item._id}}"
+      data-type="item"
+      bindtap="onEntityTap"
+    >
+      <view class="rank-card__no">{{index + 1}}</view>
+      <view class="rank-card__name">{{item.name || '(已删除)'}}</view>
+    </view>
+  </view>
+</view>
