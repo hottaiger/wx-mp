@@ -27,3 +27,7 @@
 
 ### Requirement: 删除物品
 系统 SHALL 提供 `deleteItem` 云函数，级联删除关联 `relations`。
+
+#### Scenario: 级联删除
+- **WHEN** 删除某物品
+- **THEN** 物品记录移除，且以该物品为端点的 `relations` 一并删除

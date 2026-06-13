@@ -2,6 +2,8 @@
 comet_change: init-weilu-mvp
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-06-13-init-weilu-mvp
+status: final
 ---
 
 # 微录 MVP — 技术设计
