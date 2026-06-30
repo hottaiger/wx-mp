@@ -1,6 +1,7 @@
 // pages/detail/index.js
 const cloud = require('../../utils/cloud.js');
 const storage = require('../../utils/storage.js');
+const share = require('../../utils/share.js');
 
 const TYPE_LABEL = { person: '人', event: '事', item: '物' };
 const TYPE_MAP = { person: '人物', event: '事件', item: '物品' };
@@ -36,6 +37,13 @@ function decorate(e, type) {
   return out;
 }
 
+function getShareText(type, entity) {
+  const name = entity.name || entity.title || '一条记录';
+  if (type === 'person') return `微录 · 认识一下 ${name}`;
+  if (type === 'item') return `微录 · 记录了物品 ${name}`;
+  return `微录 · 记录了一件事：${name}`;
+}
+
 Page({
   data: {
     type: '',
@@ -56,6 +64,7 @@ Page({
   },
 
   onLoad(opts) {
+    share.ensureShareMenu();
     this.setData({ type: opts.type || 'event', id: opts.id, typeLabel: TYPE_LABEL[opts.type] || '' });
     wx.setNavigationBarTitle({ title: (TYPE_LABEL[this.data.type] || '') + '详情' });
     this.loadDetail();
@@ -152,5 +161,19 @@ Page({
 
   onAddRelation() {
     wx.navigateTo({ url: `/pages/relation/index?fromId=${this.data.id}&fromType=${this.data.type}` });
+  },
+
+  onShareAppMessage() {
+    return share.buildSharePayload({
+      title: getShareText(this.data.type, this.data.entity || {}),
+      path: `/pages/detail/index?type=${this.data.type}&id=${this.data.id}`,
+    });
+  },
+
+  onShareTimeline() {
+    return share.buildSharePayload({
+      title: getShareText(this.data.type, this.data.entity || {}),
+      query: `type=${this.data.type}&id=${this.data.id}`,
+    });
   },
 });

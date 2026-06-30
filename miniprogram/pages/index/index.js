@@ -1,6 +1,7 @@
 // pages/index/index.js
 const cloud = require('../../utils/cloud.js');
 const storage = require('../../utils/storage.js');
+const share = require('../../utils/share.js');
 
 const TABS = [
   { key: 'event', label: '事' },
@@ -59,6 +60,7 @@ Page({
   },
 
   onLoad() {
+    share.ensureShareMenu();
     this.refreshAllCounts();
     this.loadList();
   },
@@ -135,5 +137,19 @@ Page({
         wx.showToast({ title: err.message || '加载失败', icon: 'none' });
       })
       .then(() => this.setData({ loading: false }));
+  },
+
+  onShareAppMessage() {
+    return share.buildSharePayload({
+      title: '微录 · 把人、事、物记在一起',
+      path: '/pages/index/index',
+    });
+  },
+
+  onShareTimeline() {
+    return share.buildSharePayload({
+      title: '微录 · 把人、事、物记在一起',
+      query: '',
+    });
   },
 });

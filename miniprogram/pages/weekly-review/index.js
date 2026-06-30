@@ -1,5 +1,6 @@
 // pages/weekly-review/index.js
 const cloud = require('../../utils/cloud.js');
+const share = require('../../utils/share.js');
 
 function getWeekRange() {
   const d = new Date();
@@ -30,6 +31,10 @@ Page({
   },
 
   onLoad() { this.load(); },
+  
+  onReady() {
+    share.ensureShareMenu();
+  },
 
   onPullDownRefresh() { this.load().then(() => wx.stopPullDownRefresh()); },
 
@@ -71,5 +76,19 @@ Page({
   onEntityTap(e) {
     const { id, type } = e.currentTarget.dataset;
     wx.navigateTo({ url: `/pages/detail/index?type=${type}&id=${id}` });
+  },
+
+  onShareAppMessage() {
+    return share.buildSharePayload({
+      title: `微录 · 本周会议 ${this.data.meetings.totalDurationMin || 0} 分钟`,
+      path: '/pages/weekly-review/index',
+    });
+  },
+
+  onShareTimeline() {
+    return share.buildSharePayload({
+      title: `微录 · 本周会议 ${this.data.meetings.totalDurationMin || 0} 分钟`,
+      query: '',
+    });
   },
 });
