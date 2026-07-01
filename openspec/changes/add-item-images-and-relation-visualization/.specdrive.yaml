@@ -1,7 +1,7 @@
 workflow_version: v2
 workflow: full
 interaction_mode: auto
-auto_phase: running
+auto_phase: blocked
 phase: verify
 context_compression: off
 build_mode: executing-plans
@@ -17,6 +17,8 @@ plan: docs/superpowers/plans/2026-07-01-item-images-relation-visualization.md
 verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-01-add-item-images-and-relation-visualization-verify.md
 branch_status: pending
+pr_phase: blocked
+pr_last_error: github-auth-required
 created_at: 2026-07-01
 verified_at: 2026-07-01
 archived: false
