@@ -16,6 +16,14 @@
 .group__title { font-size: var(--t-micro); color: var(--ink-3); letter-spacing: 2rpx; text-transform: uppercase; margin-bottom: var(--s-2); }
 .group__head .group__title { margin-bottom: 0; }
 
+.image-upload { min-height: 220rpx; border: 2rpx dashed var(--line-strong); border-radius: var(--r-md); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10rpx; background: var(--bg-subtle); }
+.image-upload__plus { font-size: 52rpx; color: var(--brand); line-height: 1; }
+.image-upload__label { font-size: 28rpx; color: var(--ink-2); }
+.image-preview__img { width: 100%; height: 320rpx; border-radius: var(--r-md); background: var(--bg-subtle); }
+.image-preview__actions { display: flex; gap: 12rpx; margin-top: 16rpx; }
+.image-action { flex: 1; text-align: center; padding: 18rpx 0; border-radius: var(--r-pill); background: var(--bg-subtle); color: var(--ink-2); font-size: 26rpx; }
+.image-action--danger { background: var(--danger-soft); color: var(--danger); }
+
 .form-input { width: 100%; font-size: 30rpx; color: var(--ink-1); padding: 12rpx 0; }
 .form-input--title { font-size: 40rpx; font-weight: 600; padding: 16rpx 0 24rpx; }
 .form-input--inline { padding: 0; }

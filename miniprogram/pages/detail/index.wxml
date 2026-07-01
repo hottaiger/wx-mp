@@ -1,9 +1,10 @@
 <view class="page" wx:if="{{entity}}">
   <!-- 头部大标题 -->
   <view class="head">
-    <view class="head__crumb">{{typeLabel}} · {{entity.type ? typeMap[entity.type] : ''}}</view>
+    <view class="head__crumb">{{typeLabel}} · {{type === 'event' && entity.type ? eventTypeLabel[entity.type] : typeMap[type]}}</view>
+    <image wx:if="{{type === 'item' && entity.coverImage && entity.coverImage.fileID}}" class="head__cover" src="{{entity.coverImage.fileID}}" mode="aspectFill" />
     <view class="head__title">{{entity.name || entity.title}}</view>
-    <view class="head__meta" wx:if="{{activeTab === 'event' && entity.startAtText}}">
+    <view class="head__meta" wx:if="{{type === 'event' && entity.startAtText}}">
       <text class="head__meta-ic">◷</text>
       <text>{{entity.startAtText}}</text>
       <text wx:if="{{entity.durationMin}}"> · {{entity.durationMin}} 分钟</text>
@@ -44,6 +45,13 @@
       </view>
     </view>
 
+    <view class="group" wx:if="{{!isEditing && type === 'item' && entity.coverImage && entity.coverImage.fileID}}">
+      <view class="group__title">图片</view>
+      <view class="group__body">
+        <image class="detail-image" src="{{entity.coverImage.fileID}}" mode="aspectFill" />
+      </view>
+    </view>
+
     <view class="group" wx:if="{{!isEditing && entity.traits && entity.traits.length}}">
       <view class="group__title">特点</view>
       <view class="tags">
@@ -51,11 +59,11 @@
       </view>
     </view>
 
-    <view class="group" wx:if="{{!isEditing && entity.attrs && objectKeys(entity.attrs).length}}">
+    <view class="group" wx:if="{{!isEditing && entity.attrEntries && entity.attrEntries.length}}">
       <view class="group__title">属性</view>
-      <view class="row-item" wx:for="{{objectKeys(entity.attrs)}}" wx:key="*this" wx:for-item="k">
-        <text class="row-item__label">{{k}}</text>
-        <text class="row-item__value">{{entity.attrs[k]}}</text>
+      <view class="row-item" wx:for="{{entity.attrEntries}}" wx:key="key">
+        <text class="row-item__label">{{item.key}}</text>
+        <text class="row-item__value">{{item.value}}</text>
       </view>
     </view>
 
@@ -85,6 +93,22 @@
         <view class="form-row" wx:if="{{type === 'person'}}">
           <text class="form-row__label">特点</text>
           <input class="form-row__input" data-field="traitsStr" value="{{editForm.traitsStr}}" bindinput="onFieldInput" placeholder="逗号分隔" />
+        </view>
+        <view class="form-row form-row--stack" wx:if="{{type === 'item'}}">
+          <text class="form-row__label">主图</text>
+          <view class="form-row__body">
+            <view class="image-upload image-upload--compact" wx:if="{{!editForm.coverImage}}" hover-class="press" bindtap="onChooseItemImage">
+              <text class="image-upload__plus">+</text>
+              <text class="image-upload__label">上传图片</text>
+            </view>
+            <block wx:if="{{editForm.coverImage}}">
+              <image class="detail-image" src="{{editForm.coverImage.tempFilePath || editForm.coverImage.fileID}}" mode="aspectFill" />
+              <view class="inline-actions">
+                <view class="inline-action" hover-class="press" bindtap="onChooseItemImage">替换</view>
+                <view class="inline-action inline-action--danger" hover-class="press" bindtap="onRemoveItemImage">删除</view>
+              </view>
+            </block>
+          </view>
         </view>
         <view class="form-row">
           <text class="form-row__label">备注</text>
@@ -117,21 +141,35 @@
       <view class="empty__sub">把这条记录连到别的人、事、物</view>
     </view>
 
-    <view wx:if="{{relations.length}}">
-      <view
-        wx:for="{{relations}}"
-        wx:key="_id"
-        class="rel-card"
-        hover-class="card--press"
-        data-id="{{item.fromId === id ? item.toId : item.fromId}}"
-        data-type="{{item.fromId === id ? item.toType : item.fromType}}"
-        bindtap="onRelationTap"
-      >
-        <view class="rel-card__line">
-          <text class="rel-card__rel">{{relLabel[item.relType] || item.relType}}</text>
-          <text class="rel-card__arrow">→</text>
+    <view wx:if="{{groupedRelations.length}}">
+      <view wx:for="{{groupedRelations}}" wx:key="type" class="relation-group">
+        <view class="relation-group__head">
+          <view class="relation-group__tree">└</view>
+          <view class="relation-group__title">{{item.title}}</view>
+          <view class="relation-group__count">{{item.count}}</view>
         </view>
-        <view class="rel-card__opposite">{{typeMap[item.fromId === id ? item.toType : item.fromType]}}</view>
+        <view class="relation-group__body">
+          <view
+            wx:for="{{item.items}}"
+            wx:key="_id"
+            wx:for-item="relationItem"
+            class="rel-card"
+            hover-class="card--press"
+            data-id="{{relationItem.counterparty.id}}"
+            data-type="{{relationItem.counterparty.type}}"
+            bindtap="onRelationTap"
+          >
+            <view class="rel-card__tree">├</view>
+            <view class="rel-card__content">
+              <view class="rel-card__line">
+                <text class="rel-card__title">{{relationItem.counterparty.title}}</text>
+                <text class="rel-card__badge">{{relLabel[relationItem.relType] || relationItem.relType}}</text>
+              </view>
+              <view class="rel-card__subtitle" wx:if="{{relationItem.counterparty.subtitle}}">{{relationItem.counterparty.subtitle}}</view>
+            </view>
+            <text class="rel-card__arrow">›</text>
+          </view>
+        </view>
       </view>
     </view>
   </view>

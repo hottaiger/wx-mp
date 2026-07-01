@@ -45,30 +45,33 @@
     <view
       wx:for="{{list}}"
       wx:key="_id"
-      class="card"
+      class="card {{activeTab === 'item' ? 'card--media' : ''}}"
       hover-class="card--press"
       data-id="{{item._id}}"
       data-type="{{activeTab}}"
       bindtap="onItemTap"
     >
-      <view class="card__line">
-        <view class="card__title">{{item.name || item.title}}</view>
-        <view wx:if="{{activeTab === 'event' && item.type}}" class="chip chip--{{item.type}}">{{typeLabel[item.type]}}</view>
-      </view>
-      <view class="card__meta" wx:if="{{activeTab === 'event' && item.startAtText}}">
-        <text class="card__meta-ic">◷</text>
-        <text>{{item.startAtText}}</text>
-        <text wx:if="{{item.durationMin}}"> · {{item.durationMin}} 分钟</text>
-      </view>
-      <view class="card__meta" wx:if="{{activeTab === 'item' && item.boughtAtText}}">
-        <text class="card__meta-ic">◈</text>
-        <text>购于 {{item.boughtAtText}}</text>
-      </view>
-      <view class="card__meta" wx:if="{{activeTab === 'person' && item.traits && item.traits.length}}">
-        <text wx:for="{{item.traits}}" wx:for-item="t" wx:key="*this" class="trait">{{t}}</text>
-      </view>
-      <view class="card__tags" wx:if="{{item.tags && item.tags.length}}">
-        <text wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this" class="tag">#{{t}}</text>
+      <image wx:if="{{activeTab === 'item' && item.coverImage && item.coverImage.fileID}}" class="card__thumb" src="{{item.coverImage.fileID}}" mode="aspectFill" />
+      <view class="card__body">
+        <view class="card__line">
+          <view class="card__title">{{item.name || item.title}}</view>
+          <view wx:if="{{activeTab === 'event' && item.type}}" class="chip chip--{{item.type}}">{{typeLabel[item.type]}}</view>
+        </view>
+        <view class="card__meta" wx:if="{{activeTab === 'event' && item.startAtText}}">
+          <text class="card__meta-ic">◷</text>
+          <text>{{item.startAtText}}</text>
+          <text wx:if="{{item.durationMin}}"> · {{item.durationMin}} 分钟</text>
+        </view>
+        <view class="card__meta" wx:if="{{activeTab === 'item' && item.boughtAtText}}">
+          <text class="card__meta-ic">◈</text>
+          <text>购于 {{item.boughtAtText}}</text>
+        </view>
+        <view class="card__meta" wx:if="{{activeTab === 'person' && item.traits && item.traits.length}}">
+          <text wx:for="{{item.traits}}" wx:for-item="t" wx:key="*this" class="trait">{{t}}</text>
+        </view>
+        <view class="card__tags" wx:if="{{item.tags && item.tags.length}}">
+          <text wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this" class="tag">#{{t}}</text>
+        </view>
       </view>
     </view>
 

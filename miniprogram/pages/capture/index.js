@@ -1,6 +1,7 @@
 // pages/capture/index.js
 const cloud = require('../../utils/cloud.js');
 const timeParser = require('../../utils/time-parser.js');
+const itemImage = require('../../utils/item-image.js');
 
 const TABS = [
   { key: 'event', label: '事' },
@@ -29,6 +30,7 @@ Page({
       description: '', note: '',
       traitsStr: '', tagsStr: '',
       boughtDate: '',
+      coverImage: null,
       attrs: [], // [{key,value}]
       newAttrKey: '', newAttrValue: '',
     },
@@ -67,6 +69,25 @@ Page({
   },
   onBoughtDateChange(e) {
     this.setData({ 'form.boughtDate': e.detail.value });
+  },
+
+  async onChooseItemImage() {
+    try {
+      wx.showLoading({ title: '上传中...' });
+      const file = await itemImage.chooseOneImage();
+      const uploaded = await itemImage.uploadImage(file);
+      this.setData({ 'form.coverImage': uploaded });
+      wx.hideLoading();
+      wx.showToast({ title: '图片已添加', icon: 'success' });
+    } catch (err) {
+      wx.hideLoading();
+      if (err && err.errMsg && err.errMsg.includes('cancel')) return;
+      wx.showToast({ title: (err && err.message) || '上传失败', icon: 'none' });
+    }
+  },
+
+  onRemoveItemImage() {
+    this.setData({ 'form.coverImage': null });
   },
 
   onAttrKeyInput(e) { this.setData({ 'form.newAttrKey': e.detail.value }); },
@@ -127,6 +148,12 @@ Page({
       if (form.attrs.length) {
         payload.attrs = {};
         form.attrs.forEach((a) => { payload.attrs[a.key] = a.value; });
+      }
+      if (form.coverImage && form.coverImage.fileID) {
+        payload.coverImage = {
+          fileID: form.coverImage.fileID,
+          cloudPath: form.coverImage.cloudPath,
+        };
       }
       if (form.tagsStr.trim()) payload.tags = form.tagsStr.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
       if (form.note) payload.note = form.note;
