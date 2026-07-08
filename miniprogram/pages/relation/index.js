@@ -1,19 +1,11 @@
 // pages/relation/index.js
 const cloud = require('../../utils/cloud.js');
+const relationRules = require('../../utils/relation-rules.js');
 
 const TYPES = [
   { value: 'event', label: '事' },
   { value: 'person', label: '人' },
   { value: 'item', label: '物' },
-];
-
-const REL_CANDIDATES = [
-  { value: 'event-involves-person', label: '事件涉及人', from: 'event', to: 'person' },
-  { value: 'event-involves-item', label: '事件涉及物', from: 'event', to: 'item' },
-  { value: 'person-owns-item', label: '人拥有物', from: 'person', to: 'item' },
-  { value: 'person-knows-person', label: '人认识人', from: 'person', to: 'person' },
-  { value: 'item-pairs-with-item', label: '物搭配物', from: 'item', to: 'item' },
-  { value: 'generic', label: '通用关联', from: '*', to: '*' },
 ];
 
 const REL_LABEL = {
@@ -35,7 +27,8 @@ function formatTime(ts) {
 Page({
   data: {
     types: TYPES,
-    relCandidates: REL_CANDIDATES,
+    relCandidates: relationRules.decorateRelationCandidates('', 'event'),
+    visibleRelCandidates: [],
     relLabel: REL_LABEL,
     fromId: '',
     fromType: '',
@@ -56,7 +49,9 @@ Page({
       fromId: opts.fromId,
       fromType: opts.fromType,
       fromTypeLabel: TYPE_LABEL[opts.fromType] || '',
+      relCandidates: relationRules.decorateRelationCandidates(opts.fromType, this.data.toType),
     });
+    this.refreshVisibleRelCandidates();
     this.fetchFromSnippet();
     this.fetchToList();
   },
@@ -77,19 +72,36 @@ Page({
     const v = e.currentTarget.dataset.value;
     this.setData({
       toType: v, toTypeLabel: TYPE_LABEL[v],
-      selectedToId: '', selectedToEntity: null, step: 1,
+      relType: '', selectedToId: '', selectedToEntity: null, step: 1,
+      relCandidates: relationRules.decorateRelationCandidates(this.data.fromType, v),
     });
+    this.refreshVisibleRelCandidates();
     this.fetchToList();
   },
 
+  refreshVisibleRelCandidates() {
+    this.setData({
+      visibleRelCandidates: this.data.relCandidates.filter((item) => !item.disabled),
+    });
+  },
+
   onRelTypeSelect(e) {
-    this.setData({ relType: e.currentTarget.dataset.value, step: 3 });
+    const value = e.currentTarget.dataset.value;
+    const candidate = this.data.relCandidates.find((item) => item.value === value);
+    if (candidate && candidate.disabled) return;
+    this.setData({ relType: value, step: 3 });
   },
 
   onEntitySelect(e) {
     const idx = e.currentTarget.dataset.index;
     const item = this.data.toList[idx];
     this.setData({ selectedToId: item._id, selectedToEntity: item });
+  },
+
+  markPreviousPageForRefresh() {
+    const pages = getCurrentPages();
+    const prev = pages[pages.length - 2];
+    if (prev) prev._needRefresh = true;
   },
 
   fetchToList() {
@@ -101,7 +113,7 @@ Page({
         const filtered = rows.filter((r) => !(r._id === this.data.fromId && this.data.toType === this.data.fromType));
         // 装饰时间
         const decorated = filtered.map((it) => {
-          const out = { ...it };
+          const out = Object.assign({}, it);
           if (this.data.toType === 'event' && it.startAt) out.startAtText = formatTime(it.startAt);
           if (this.data.toType === 'item' && it.boughtAt) out.boughtAtText = (new Date(it.boughtAt).toISOString().slice(0, 10));
           return out;
@@ -123,12 +135,15 @@ Page({
       await cloud.call('relation', {
         action: 'create',
         payload: {
-          fromId: this.data.fromId, fromType: this.data.fromType,
-          toId: this.data.selectedToId, toType: this.data.toType,
-          relType: this.data.relType,
+          ...relationRules.normalizeRelationPayload({
+            fromId: this.data.fromId, fromType: this.data.fromType,
+            toId: this.data.selectedToId, toType: this.data.toType,
+            relType: this.data.relType,
+          }),
         },
       });
       wx.showToast({ title: '已关联', icon: 'success' });
+      this.markPreviousPageForRefresh();
       setTimeout(() => wx.navigateBack(), 600);
     } catch (err) {
       wx.showToast({ title: err.message || '关联失败', icon: 'none' });

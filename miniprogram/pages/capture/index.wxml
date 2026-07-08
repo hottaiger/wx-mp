@@ -89,6 +89,20 @@
         <input class="form-input form-input--title" placeholder="物品名" placeholder-class="form-input__ph" data-field="name" value="{{form.name}}" bindinput="onFieldInput" />
       </view>
       <view class="group">
+        <view class="group__title">主图</view>
+        <view class="image-upload" wx:if="{{!form.coverImage}}" hover-class="press" bindtap="onChooseItemImage">
+          <text class="image-upload__plus">+</text>
+          <text class="image-upload__label">上传图片</text>
+        </view>
+        <view class="image-preview" wx:if="{{form.coverImage}}">
+          <image class="image-preview__img" src="{{form.coverImage.tempFilePath || form.coverImage.fileID}}" mode="aspectFill" />
+          <view class="image-preview__actions">
+            <view class="image-action" hover-class="press" bindtap="onChooseItemImage">替换</view>
+            <view class="image-action image-action--danger" hover-class="press" bindtap="onRemoveItemImage">删除</view>
+          </view>
+        </view>
+      </view>
+      <view class="group">
         <view class="group__title">购入</view>
         <picker mode="date" value="{{form.boughtDate}}" bindchange="onBoughtDateChange">
           <view class="picker {{form.boughtDate ? '' : 'picker--ph'}}">{{form.boughtDate || '选择购入日期'}}</view>

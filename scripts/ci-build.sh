@@ -9,4 +9,8 @@ for d in cloudfunctions/*/; do
   [ -f "$d/index.js" ] && node --check "$d/index.js"
 done
 node -e "JSON.parse(require('fs').readFileSync('miniprogram/app.json'))"
+node scripts/test-relation-view.js
+node scripts/test-relation-rules.js
+node scripts/test-relation-refresh.js
+node scripts/test-delete-query.js
 echo BUILD_OK

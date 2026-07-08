@@ -2,6 +2,8 @@
 const cloud = require('../../utils/cloud.js');
 const storage = require('../../utils/storage.js');
 const share = require('../../utils/share.js');
+const itemImage = require('../../utils/item-image.js');
+const relationView = require('../../utils/relation-view.js');
 
 const TYPE_LABEL = { person: '人', event: '事', item: '物' };
 const TYPE_MAP = { person: '人物', event: '事件', item: '物品' };
@@ -31,9 +33,14 @@ function formatDate(ts) {
 }
 function decorate(e, type) {
   if (!e) return e;
-  const out = { ...e };
+  const out = Object.assign({}, e);
   if (type === 'event' && e.startAt) out.startAtText = formatTime(e.startAt);
   if (type === 'item' && e.boughtAt) out.boughtAtText = formatDate(e.boughtAt);
+  if (type === 'item' && e.attrs) {
+    out.attrEntries = Object.keys(e.attrs).map((key) => ({ key, value: e.attrs[key] }));
+  } else {
+    out.attrEntries = [];
+  }
   return out;
 }
 
@@ -50,9 +57,11 @@ Page({
     typeLabel: '',
     typeMap: TYPE_MAP,
     relLabel: REL_LABEL,
+    eventTypeLabel: EVENT_TYPE,
     id: '',
     entity: null,
     relations: [],
+    groupedRelations: [],
     activeTab2: 'detail',
     loading: true,
     isEditing: false,
@@ -83,7 +92,9 @@ Page({
     try {
       const res = await cloud.call(this.data.type, { action: 'getDetail', id: this.data.id });
       const entity = decorate(res.entity, this.data.type);
-      this.setData({ entity, relations: [...(res.relationsFrom || []), ...(res.relationsTo || [])] });
+      const relations = res.relations || (res.relationsFrom || []).concat(res.relationsTo || []);
+      const groupedRelations = relationView.groupRelationsByType(relations, this.data.type);
+      this.setData({ entity, relations, groupedRelations });
       storage.clear();
     } catch (err) {
       wx.showToast({ title: err.message || '加载失败', icon: 'none' });
@@ -92,30 +103,48 @@ Page({
     }
   },
 
-  objectKeys(obj) { return obj ? Object.keys(obj) : []; },
-
   onEditTap() {
     const e = this.data.entity || {};
     this.setData({
       isEditing: true,
-      editForm: {
-        ...e,
+      editForm: Object.assign({}, e, {
         traitsStr: Array.isArray(e.traits) ? e.traits.join(',') : '',
         tagsStr: Array.isArray(e.tags) ? e.tags.join(',') : '',
-      },
+      }),
     });
   },
 
   onCancelEdit() { this.setData({ isEditing: false, editForm: {} }); },
 
   onFieldInput(e) {
-    this.setData({ [`editForm.${e.currentTarget.dataset.field}`]: e.detail.value });
+    const patch = {};
+    patch['editForm.' + e.currentTarget.dataset.field] = e.detail.value;
+    this.setData(patch);
+  },
+
+  async onChooseItemImage() {
+    try {
+      wx.showLoading({ title: '上传中...' });
+      const file = await itemImage.chooseOneImage();
+      const uploaded = await itemImage.uploadImage(file);
+      this.setData({ 'editForm.coverImage': uploaded });
+      wx.hideLoading();
+      wx.showToast({ title: '图片已更新', icon: 'success' });
+    } catch (err) {
+      wx.hideLoading();
+      if (err && err.errMsg && err.errMsg.includes('cancel')) return;
+      wx.showToast({ title: (err && err.message) || '上传失败', icon: 'none' });
+    }
+  },
+
+  onRemoveItemImage() {
+    this.setData({ 'editForm.coverImage': null });
   },
 
   async onSaveEdit() {
     const { type, id } = this.data;
     const f = this.data.editForm;
-    const payload = { ...f };
+    const payload = Object.assign({}, f);
     if (typeof payload.traitsStr === 'string') {
       payload.traits = payload.traitsStr.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
       delete payload.traitsStr;
@@ -123,6 +152,16 @@ Page({
     if (typeof payload.tagsStr === 'string') {
       payload.tags = payload.tagsStr.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
       delete payload.tagsStr;
+    }
+    if (type === 'item') {
+      if (payload.coverImage && payload.coverImage.fileID) {
+        payload.coverImage = {
+          fileID: payload.coverImage.fileID,
+          cloudPath: payload.coverImage.cloudPath,
+        };
+      } else {
+        payload.coverImage = null;
+      }
     }
     delete payload._id; delete payload._openid;
     try {

@@ -1,13 +1,11 @@
 // utils/share.js
-function buildSharePayload(options = {}) {
-  const {
-    title = '微录',
-    path = '/pages/index/index',
-    imageUrl,
-    query = '',
-  } = options;
-
-  const payload = { title };
+function buildSharePayload(options) {
+  var opts = options || {};
+  var title = opts.title || '微录';
+  var path = typeof opts.path === 'string' ? opts.path : '/pages/index/index';
+  var imageUrl = opts.imageUrl;
+  var query = opts.query || '';
+  var payload = { title: title };
   if (path) payload.path = path;
   if (imageUrl) payload.imageUrl = imageUrl;
   if (query) payload.query = query;
