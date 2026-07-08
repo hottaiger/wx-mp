@@ -2,6 +2,7 @@
 change: add-item-images-and-relation-visualization
 design-doc: docs/superpowers/specs/2026-07-01-item-images-relation-visualization-design.md
 base-ref: 4e7942ec341dfed0ede2dd9570a0169c234851ab
+archived-with: 2026-07-08-add-item-images-and-relation-visualization
 ---
 
 # 实施计划

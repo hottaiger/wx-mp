@@ -36,6 +36,8 @@
 - **WHEN** 尝试删除 `_openid != 当前` 的 relation
 - **THEN** 返回 `ERR_NOT_FOUND`
 
+## ADDED Requirements
+
 ### Requirement: 详情页关联分组展示
 系统 SHALL 在详情页把当前实体的关联按对端实体类型分组展示，至少分为 `person`、`event`、`item` 三组，并展示每组数量。
 
