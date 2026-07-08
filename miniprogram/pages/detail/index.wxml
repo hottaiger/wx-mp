@@ -28,7 +28,7 @@
     <view class="group" wx:if="{{!isEditing}}">
       <view class="group__title">基本信息</view>
       <view class="row-item" wx:if="{{entity.boughtAtText}}">
-        <text class="row-item__label">购入时间</text>
+        <text class="row-item__label">添加时间</text>
         <text class="row-item__value">{{entity.boughtAtText}}</text>
       </view>
       <view class="row-item" wx:if="{{entity.durationMin != null}}">

@@ -38,7 +38,7 @@ function formatDate(ts) {
 function decorate(list, type) {
   if (!Array.isArray(list)) return [];
   return list.map((it) => {
-    const out = { ...it };
+    const out = Object.assign({}, it);
     if (type === 'event' && it.startAt) out.startAtText = formatTime(it.startAt);
     if (type === 'item' && it.boughtAt) out.boughtAtText = formatDate(it.boughtAt);
     return out;
@@ -113,7 +113,9 @@ Page({
         .call(t.key, { action: 'list', pageSize: 1 })
         .then((res) => {
           const total = (res && (res.total != null ? res.total : (Array.isArray(res) ? res.length : 0))) || 0;
-          this.setData({ [`counts.${t.key}`]: total });
+          const patch = {};
+          patch['counts.' + t.key] = total;
+          this.setData(patch);
         })
         .catch(() => {});
     });

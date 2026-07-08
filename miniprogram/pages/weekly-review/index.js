@@ -49,7 +49,8 @@ Page({
 
       // eventsByDay 转换 + 柱高
       const entries = Object.entries(res.eventsByDay || {});
-      const maxCount = Math.max(1, ...entries.map(([, v]) => v));
+      const counts = entries.map((entry) => entry[1]);
+      const maxCount = Math.max.apply(null, [1].concat(counts));
       const eventsByDay = entries
         .map(([k, count]) => {
           const d = new Date(k);

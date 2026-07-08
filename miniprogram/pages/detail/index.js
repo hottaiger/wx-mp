@@ -33,7 +33,7 @@ function formatDate(ts) {
 }
 function decorate(e, type) {
   if (!e) return e;
-  const out = { ...e };
+  const out = Object.assign({}, e);
   if (type === 'event' && e.startAt) out.startAtText = formatTime(e.startAt);
   if (type === 'item' && e.boughtAt) out.boughtAtText = formatDate(e.boughtAt);
   if (type === 'item' && e.attrs) {
@@ -92,7 +92,7 @@ Page({
     try {
       const res = await cloud.call(this.data.type, { action: 'getDetail', id: this.data.id });
       const entity = decorate(res.entity, this.data.type);
-      const relations = res.relations || [...(res.relationsFrom || []), ...(res.relationsTo || [])];
+      const relations = res.relations || (res.relationsFrom || []).concat(res.relationsTo || []);
       const groupedRelations = relationView.groupRelationsByType(relations, this.data.type);
       this.setData({ entity, relations, groupedRelations });
       storage.clear();
@@ -107,18 +107,19 @@ Page({
     const e = this.data.entity || {};
     this.setData({
       isEditing: true,
-      editForm: {
-        ...e,
+      editForm: Object.assign({}, e, {
         traitsStr: Array.isArray(e.traits) ? e.traits.join(',') : '',
         tagsStr: Array.isArray(e.tags) ? e.tags.join(',') : '',
-      },
+      }),
     });
   },
 
   onCancelEdit() { this.setData({ isEditing: false, editForm: {} }); },
 
   onFieldInput(e) {
-    this.setData({ [`editForm.${e.currentTarget.dataset.field}`]: e.detail.value });
+    const patch = {};
+    patch['editForm.' + e.currentTarget.dataset.field] = e.detail.value;
+    this.setData(patch);
   },
 
   async onChooseItemImage() {
@@ -143,7 +144,7 @@ Page({
   async onSaveEdit() {
     const { type, id } = this.data;
     const f = this.data.editForm;
-    const payload = { ...f };
+    const payload = Object.assign({}, f);
     if (typeof payload.traitsStr === 'string') {
       payload.traits = payload.traitsStr.split(/[,，]/).map((s) => s.trim()).filter(Boolean);
       delete payload.traitsStr;

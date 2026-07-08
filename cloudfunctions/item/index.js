@@ -115,7 +115,10 @@ async function removeEntity(event, ctx) {
   }
   const result = await crud.remove(COLLECTION, event.id, ctx.openid);
   // 级联删除 relations
-  await db.collection('relations').where({ _openid: ctx.openid }).and(_.or([{ fromId: event.id }, { toId: event.id }])).remove();
+  await db.collection('relations').where(_.and([
+    { _openid: ctx.openid },
+    _.or([{ fromId: event.id }, { toId: event.id }]),
+  ])).remove();
   // 事件/物品 还要清 reminders（事件专属）
   if (COLLECTION === 'events') {
     await db.collection('reminders').where({ _openid: ctx.openid, targetType: 'event', targetId: event.id }).remove();

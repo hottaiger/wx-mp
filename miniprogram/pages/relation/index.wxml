@@ -34,9 +34,9 @@
     <view class="step__title">什么关系？</view>
     <view class="chip-row">
       <view
-        wx:for="{{relCandidates}}"
+        wx:for="{{visibleRelCandidates}}"
         wx:key="value"
-        class="chip {{relType === item.value ? 'chip--on' : ''}} {{item.from !== fromType && item.from !== '*' ? 'chip--off' : ''}}"
+        class="chip {{relType === item.value ? 'chip--on' : ''}}"
         data-value="{{item.value}}"
         hover-class="press"
         bindtap="onRelTypeSelect"

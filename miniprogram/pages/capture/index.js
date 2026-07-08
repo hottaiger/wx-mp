@@ -54,7 +54,9 @@ Page({
 
   onFieldInput(e) {
     const field = e.currentTarget.dataset.field;
-    this.setData({ [`form.${field}`]: e.detail.value });
+    const patch = {};
+    patch['form.' + field] = e.detail.value;
+    this.setData(patch);
   },
 
   onEventTypeSelect(e) {
@@ -95,8 +97,10 @@ Page({
   onAddAttr() {
     const { newAttrKey: k, newAttrValue: v, attrs } = this.data.form;
     if (!k) { wx.showToast({ title: '请输入属性名', icon: 'none' }); return; }
+    const nextAttrs = attrs.slice();
+    nextAttrs.push({ key: k, value: v });
     this.setData({
-      'form.attrs': [...attrs, { key: k, value: v }],
+      'form.attrs': nextAttrs,
       'form.newAttrKey': '',
       'form.newAttrValue': '',
     });
