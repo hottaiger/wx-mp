@@ -64,7 +64,7 @@
         </view>
         <view class="card__meta" wx:if="{{activeTab === 'item' && item.boughtAtText}}">
           <text class="card__meta-ic">◈</text>
-          <text>购于 {{item.boughtAtText}}</text>
+          <text>添加 {{item.boughtAtText}}</text>
         </view>
         <view class="card__meta" wx:if="{{activeTab === 'person' && item.traits && item.traits.length}}">
           <text wx:for="{{item.traits}}" wx:for-item="t" wx:key="*this" class="trait">{{t}}</text>
