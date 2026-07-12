@@ -1,6 +1,6 @@
 workflow: full
 language: en
-phase: verify
+phase: archive
 context_compression: off
 build_mode: executing-plans
 build_pause: null
@@ -13,12 +13,12 @@ auto_transition: true
 base_ref: 77339f16cd084f5da120b794b2063d2e44428ecb
 design_doc: docs/superpowers/specs/2026-07-12-content-security-design.md
 plan: docs/superpowers/plans/2026-07-12-content-security.md
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-12-add-content-security-checks-verify.md
 branch_status: handled
 created_at: 2026-07-12
-verified_at: null
-archived: false
+verified_at: 2026-07-12
+archived: true
 direct_override: null
 classic_profile: full
 classic_migration: 1

@@ -2,6 +2,7 @@
 change: add-content-security-checks
 design-doc: docs/superpowers/specs/2026-07-12-content-security-design.md
 base-ref: 77339f16cd084f5da120b794b2063d2e44428ecb
+archived-with: 2026-07-12-add-content-security-checks
 ---
 
 # Content Security Checks Implementation Plan
@@ -27,6 +28,7 @@ base-ref: 77339f16cd084f5da120b794b2063d2e44428ecb
 - Existing page paths, collection names, cloud-function names, `_openid` isolation, and `wx.cloud.callFunction` publication flow remain unchanged.
 - Images selected through `wx.chooseMedia` MUST request compression and reject files over the synchronous image-check limit before upload.
 
+archived-with: 2026-07-12-add-content-security-checks
 ---
 
 ### Task 1: Content-security adapter and business errors
@@ -485,3 +487,4 @@ git commit -m "test: verify content security publication paths"
 ```
 
 Plan complete and saved to `docs/superpowers/plans/2026-07-12-content-security.md`. The selected Comet build mode determines whether implementation uses subagent-driven development or inline executing-plans.
+

@@ -2,6 +2,8 @@
 comet_change: add-content-security-checks
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-12-add-content-security-checks
+status: final
 ---
 
 # Content Security Technical Design
@@ -104,3 +106,4 @@ Deploy all three cloud functions before submitting the new mini-program build. V
 ## Future Migration
 
 Move images to `security.mediaCheckAsync` v2 only with a separate design that adds pending publication, a message-push receiver, trace-ID correlation, pass/risky state transitions, timeout handling, and storage cleanup.
+
