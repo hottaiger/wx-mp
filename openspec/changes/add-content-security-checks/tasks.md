@@ -6,7 +6,7 @@
 ## 2. Publishing-path integration
 
 - [x] 2.1 Use TDD to integrate text inspection into person, event, and item create/update paths.
-- [ ] 2.2 Use TDD to integrate image inspection into new and replacement item-image paths.
+- [x] 2.2 Use TDD to integrate image inspection into new and replacement item-image paths.
 
 ## 3. Mini-program behavior
 

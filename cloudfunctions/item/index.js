@@ -97,6 +97,13 @@ async function createEntity(event, ctx) {
     throw Object.assign(new Error('coverImage.fileID 必填'), { code: errors.ERROR_CODES.VALIDATION });
   }
   await contentSecurity.assertTextSafe({ cloud, openid: ctx.openid, payload });
+  if (payload.coverImage && payload.coverImage.fileID) {
+    await contentSecurity.assertImageSafe({
+      cloud,
+      fileID: payload.coverImage.fileID,
+      cloudPath: payload.coverImage.cloudPath,
+    });
+  }
   return crud.create(COLLECTION, payload, ctx.openid);
 }
 
@@ -109,6 +116,17 @@ async function updateEntity(event, ctx) {
     throw Object.assign(new Error('coverImage.fileID 必填'), { code: errors.ERROR_CODES.VALIDATION });
   }
   await contentSecurity.assertTextSafe({ cloud, openid: ctx.openid, payload });
+  if (payload.coverImage && payload.coverImage.fileID) {
+    const current = await crud.getOne(COLLECTION, event.id, ctx.openid);
+    const currentFileID = current.coverImage && current.coverImage.fileID;
+    if (payload.coverImage.fileID !== currentFileID) {
+      await contentSecurity.assertImageSafe({
+        cloud,
+        fileID: payload.coverImage.fileID,
+        cloudPath: payload.coverImage.cloudPath,
+      });
+    }
+  }
   return crud.update(COLLECTION, event.id, payload, ctx.openid);
 }
 

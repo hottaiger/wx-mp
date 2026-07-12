@@ -92,3 +92,48 @@ for (const entity of ['person', 'event', 'item']) {
     assert.equal(calls.some((call) => call.startsWith('create:')), false);
   });
 }
+
+test('item create checks a submitted image before create', async () => {
+  const { main, calls } = loadEntity('item');
+  await main({
+    action: 'create',
+    payload: { name: 'item', coverImage: { fileID: 'cloud://new', cloudPath: 'items/new.jpg' } },
+  });
+  assert.deepEqual(calls.slice(-2), ['image:cloud://new', 'create:item']);
+});
+
+test('item update checks only a replacement image', async () => {
+  const { main, calls } = loadEntity('item', { current: { coverImage: { fileID: 'cloud://old' } } });
+  await main({
+    action: 'update',
+    id: 'id-1',
+    payload: { coverImage: { fileID: 'cloud://new', cloudPath: 'items/new.png' } },
+  });
+  assert.ok(calls.indexOf('getOne:id-1') < calls.indexOf('image:cloud://new'));
+  assert.ok(calls.indexOf('image:cloud://new') < calls.indexOf('update:item'));
+});
+
+for (const [name, payload] of [
+  ['unchanged image', { coverImage: { fileID: 'cloud://old', cloudPath: 'items/old.jpg' } }],
+  ['image removal', { coverImage: null }],
+  ['absent image', { note: 'safe' }],
+]) {
+  test(`item update skips ${name}`, async () => {
+    const { main, calls } = loadEntity('item', { current: { coverImage: { fileID: 'cloud://old' } } });
+    await main({ action: 'update', id: 'id-1', payload });
+    assert.equal(calls.some((call) => call.startsWith('image:')), false);
+  });
+}
+
+test('item image inspection failure blocks update', async () => {
+  const { main, calls } = loadEntity('item', {
+    current: { coverImage: { fileID: 'cloud://old' } },
+    imageError: new Error('blocked image'),
+  });
+  await assert.rejects(main({
+    action: 'update',
+    id: 'id-1',
+    payload: { coverImage: { fileID: 'cloud://new', cloudPath: 'items/new.jpg' } },
+  }), /blocked image/);
+  assert.equal(calls.includes('update:item'), false);
+});
