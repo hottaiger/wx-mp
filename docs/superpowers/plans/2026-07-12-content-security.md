@@ -50,7 +50,7 @@ base-ref: 77339f16cd084f5da120b794b2063d2e44428ecb
 - Consumes: a `cloud` object exposing `openapi.security.msgSecCheck`, `openapi.security.imgSecCheck`, and `downloadFile`.
 - Produces: `collectText(payload): string`, `createContentSecurityError(kind): Error`, `assertTextSafe({ cloud, openid, payload }): Promise<void>`, and `assertImageSafe({ cloud, fileID, cloudPath }): Promise<void>`; new error constants `ERROR_CODES.CONTENT_RISKY` and `ERROR_CODES.CONTENT_SECURITY_UNAVAILABLE`.
 
-- [ ] **Step 1: Write failing adapter tests**
+- [x] **Step 1: Write failing adapter tests**
 
 Create `scripts/test-content-security.js` with `node:test` cases that import `cloudfunctions/common/contentSecurity.js` and assert:
 
@@ -117,13 +117,13 @@ test('assertImageSafe downloads and checks the image buffer', async () => {
 });
 ```
 
-- [ ] **Step 2: Run the adapter tests and verify RED**
+- [x] **Step 2: Run the adapter tests and verify RED**
 
 Run: `node --test scripts/test-content-security.js`
 
 Expected: FAIL with `Cannot find module '../cloudfunctions/common/contentSecurity.js'`.
 
-- [ ] **Step 3: Implement the adapter and error constants**
+- [x] **Step 3: Implement the adapter and error constants**
 
 Implement `cloudfunctions/common/contentSecurity.js` with a recursive collector using `Set` insertion order, an empty-text no-op, exact text request parameters, pass-only success, risky/review classification, image download and `imgSecCheck({ media: { contentType, value: fileContent } })`, and fail-closed error conversion. Treat documented error code `87014` as risky; never copy an upstream error message into the created error.
 
@@ -171,13 +171,13 @@ contentSecurity: require('./contentSecurity.js'),
 
 Copy `cloudfunctions/common/contentSecurity.js` byte-for-byte into the three entity packages after the root helper passes tests.
 
-- [ ] **Step 4: Complete classification tests and verify GREEN**
+- [x] **Step 4: Complete classification tests and verify GREEN**
 
 Add tests for empty payload no-op, explicit text `pass`, image risk conversion using a documented risk code, and download/API failures becoming `ERR_CONTENT_SECURITY_UNAVAILABLE`. Run: `node --test scripts/test-content-security.js`
 
 Expected: all content-security adapter tests PASS.
 
-- [ ] **Step 5: Commit the adapter**
+- [x] **Step 5: Commit the adapter**
 
 ```bash
 git add scripts/test-content-security.js cloudfunctions/common cloudfunctions/person/common cloudfunctions/event/common cloudfunctions/item/common
@@ -196,7 +196,7 @@ git commit -m "feat: add content security adapter"
 - Consumes: `contentSecurity.assertTextSafe({ cloud, openid, payload })` from Task 1.
 - Produces: person/event/item create and update handlers that await text inspection before `crud.create` or `crud.update`.
 
-- [ ] **Step 1: Write failing source-contract and ordering tests**
+- [x] **Step 1: Write failing source-contract and ordering tests**
 
 Create `scripts/test-content-security-handlers.js` using `node:test`. Load each handler with a fake `wx-server-sdk` and fake `./common/index.js` via a temporary `Module._load` override; record calls from `assertTextSafe`, `crud.create`, and `crud.update`. Invoke the exported wrapped `main` with create and update events and assert exact ordering:
 
@@ -218,13 +218,13 @@ for (const entity of ['person', 'event', 'item']) {
 
 The test loader's fake `withAuth` must invoke handlers with `{ openid: 'openid-1' }`; the fake database must provide `command`, `collection`, and `RegExp` members required during module initialization.
 
-- [ ] **Step 2: Run handler tests and verify RED**
+- [x] **Step 2: Run handler tests and verify RED**
 
 Run: `node --test scripts/test-content-security-handlers.js`
 
 Expected: FAIL because CRUD is called without a preceding `text:*` call.
 
-- [ ] **Step 3: Add text inspection to create and update handlers**
+- [x] **Step 3: Add text inspection to create and update handlers**
 
 In all three entity entry files, import the adapter:
 
@@ -247,13 +247,13 @@ await contentSecurity.assertTextSafe({ cloud, openid: ctx.openid, payload });
 return crud.update(COLLECTION, event.id, payload, ctx.openid);
 ```
 
-- [ ] **Step 4: Verify text enforcement and failure short-circuiting**
+- [x] **Step 4: Verify text enforcement and failure short-circuiting**
 
 Extend the tests so `assertTextSafe` throws and assert neither create nor update appears in `calls`. Run: `node --test scripts/test-content-security-handlers.js`
 
 Expected: all six ordering tests and all short-circuit tests PASS.
 
-- [ ] **Step 5: Commit text enforcement**
+- [x] **Step 5: Commit text enforcement**
 
 ```bash
 git add scripts/test-content-security-handlers.js cloudfunctions/person/index.js cloudfunctions/event/index.js cloudfunctions/item/index.js
@@ -270,7 +270,7 @@ git commit -m "feat: inspect entity text before writes"
 - Consumes: `contentSecurity.assertImageSafe({ cloud, fileID, cloudPath })` and `crud.getOne(collection, id, openid)`.
 - Produces: create/new-image and update/replacement-image checks, with no check for unchanged image, image removal, or no image field.
 
-- [ ] **Step 1: Write failing item image path tests**
+- [x] **Step 1: Write failing item image path tests**
 
 Extend the fake loader to record `image:<fileID>`, return a configurable persisted record from `crud.getOne`, and cover these exact cases:
 
@@ -291,13 +291,13 @@ test('item update checks only a replacement image', async () => {
 
 Also assert no `image:*` call for unchanged `cloud://old`, `coverImage: null`, and a payload without `coverImage`.
 
-- [ ] **Step 2: Run item-image tests and verify RED**
+- [x] **Step 2: Run item-image tests and verify RED**
 
 Run: `node --test scripts/test-content-security-handlers.js --test-name-pattern='item.*image|replacement|unchanged|removal'`
 
 Expected: FAIL because item writes do not call `assertImageSafe`.
 
-- [ ] **Step 3: Implement image create/replacement checks**
+- [x] **Step 3: Implement image create/replacement checks**
 
 In `createEntity`, after text inspection and before create:
 
@@ -319,13 +319,13 @@ if (payload.coverImage && payload.coverImage.fileID) {
 }
 ```
 
-- [ ] **Step 4: Verify all image branches and failed-check write blocking**
+- [x] **Step 4: Verify all image branches and failed-check write blocking**
 
 Add a case where `assertImageSafe` throws and assert `update:item` is absent. Run: `node --test scripts/test-content-security-handlers.js`
 
 Expected: all handler tests PASS, including new, replacement, unchanged, removal, absent-image, and failure branches.
 
-- [ ] **Step 5: Commit image enforcement**
+- [x] **Step 5: Commit image enforcement**
 
 ```bash
 git add scripts/test-content-security-handlers.js cloudfunctions/item/index.js
@@ -343,7 +343,7 @@ git commit -m "feat: inspect new item images before writes"
 - Consumes: cloud-function business codes `ERR_CONTENT_RISKY` and `ERR_CONTENT_SECURITY_UNAVAILABLE`, plus `wx.chooseMedia` temp-file metadata.
 - Produces: `errorMessage(code): string` for deterministic testing, fixed publication copy, compressed selection, and synchronous size/dimension rejection before upload.
 
-- [ ] **Step 1: Write failing client mapping and image-selection tests**
+- [x] **Step 1: Write failing client mapping and image-selection tests**
 
 Create `scripts/test-content-security-client.js` and assert exact messages plus `sizeType: ['compressed']`. Stub `global.wx.chooseMedia` and `wx.getImageInfo`, test files above 1 MB and images above 750 x 1334 pixels, and assert rejection before `wx.cloud.uploadFile` can run.
 
@@ -358,13 +358,13 @@ test('content-security codes map to fixed safe copy', () => {
 });
 ```
 
-- [ ] **Step 2: Run client tests and verify RED**
+- [x] **Step 2: Run client tests and verify RED**
 
 Run: `node --test scripts/test-content-security-client.js`
 
 Expected: FAIL because `errorMessage` and the image size constraint are not implemented.
 
-- [ ] **Step 3: Implement authoritative safe error mapping**
+- [x] **Step 3: Implement authoritative safe error mapping**
 
 Add the two entries to `ERROR_MAP`, export a pure resolver, and ensure server-provided `result.message` cannot override a mapped business code:
 
@@ -385,7 +385,7 @@ const message = ERROR_MAP[result.code] || result.message || '请求失败';
 
 Export `{ call, errorMessage }`. This keeps existing capture/detail `err.message` rendering unchanged while guaranteeing safe copy at every publishing entry point.
 
-- [ ] **Step 4: Implement compressed selection and size rejection**
+- [x] **Step 4: Implement compressed selection and size rejection**
 
 In `chooseOneImage`, add `sizeType: ['compressed']`. Define `MAX_SECURITY_IMAGE_BYTES = 1024 * 1024`, `MAX_SECURITY_IMAGE_WIDTH = 750`, and `MAX_SECURITY_IMAGE_HEIGHT = 1334`; after selecting the file, reject oversized input, call `wx.getImageInfo`, and reject dimensions that fit neither portrait nor landscape orientation:
 
@@ -398,7 +398,7 @@ if (Number(file.size) > MAX_SECURITY_IMAGE_BYTES) {
 
 Export the constants for tests. Do not add content-safety interpretation to capture/detail pages.
 
-- [ ] **Step 5: Verify client behavior and commit**
+- [x] **Step 5: Verify client behavior and commit**
 
 Run: `node --test scripts/test-content-security-client.js`
 
@@ -419,7 +419,7 @@ git commit -m "feat: add safe content rejection UX"
 - Consumes: the three focused Node test scripts and four content-security helper copies.
 - Produces: a CI gate that proves syntax, behavior, and independently deployable copy equality.
 
-- [ ] **Step 1: Add a failing copy-drift check to CI**
+- [x] **Step 1: Add a failing copy-drift check to CI**
 
 Add focused tests and a hash/equality loop to `scripts/ci-build.sh`:
 
@@ -439,7 +439,7 @@ Before synchronizing copies, alter one local copy temporarily and run `bash scri
 
 Expected: FAIL with `CONTENT_SECURITY_COPY_MISMATCH` for that package; restore it from the root helper immediately afterward.
 
-- [ ] **Step 2: Extend syntax checking to deployable common modules**
+- [x] **Step 2: Extend syntax checking to deployable common modules**
 
 Replace the root-only common syntax loop with:
 
@@ -450,7 +450,7 @@ for d in cloudfunctions/common cloudfunctions/*/common; do
 done
 ```
 
-- [ ] **Step 3: Run focused and full verification**
+- [x] **Step 3: Run focused and full verification**
 
 Run:
 
@@ -463,7 +463,7 @@ bash scripts/ci-build.sh
 
 Expected: all focused tests PASS and the final line is `BUILD_OK`.
 
-- [ ] **Step 4: Audit every OpenSpec scenario against evidence**
+- [x] **Step 4: Audit every OpenSpec scenario against evidence**
 
 Read `openspec/changes/add-content-security-checks/specs/content-security/spec.md` and verify each scenario has direct evidence:
 
@@ -477,7 +477,7 @@ Read `openspec/changes/add-content-security-checks/specs/content-security/spec.m
 
 Mark Tasks 1.1 through 4.2 complete in `openspec/changes/add-content-security-checks/tasks.md` only after the corresponding command/evidence passes.
 
-- [ ] **Step 5: Commit verification wiring**
+- [x] **Step 5: Commit verification wiring**
 
 ```bash
 git add scripts/ci-build.sh openspec/changes/add-content-security-checks/tasks.md
