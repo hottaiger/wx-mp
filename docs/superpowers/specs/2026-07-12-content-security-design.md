@@ -106,4 +106,3 @@ Deploy all three cloud functions before submitting the new mini-program build. V
 ## Future Migration
 
 Move images to `security.mediaCheckAsync` v2 only with a separate design that adds pending publication, a message-push receiver, trace-ID correlation, pass/risky state transitions, timeout handling, and storage cleanup.
-

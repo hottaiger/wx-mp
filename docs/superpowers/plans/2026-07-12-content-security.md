@@ -487,4 +487,3 @@ git commit -m "test: verify content security publication paths"
 ```
 
 Plan complete and saved to `docs/superpowers/plans/2026-07-12-content-security.md`. The selected Comet build mode determines whether implementation uses subagent-driven development or inline executing-plans.
-

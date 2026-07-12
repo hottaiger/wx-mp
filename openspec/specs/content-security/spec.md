@@ -58,4 +58,3 @@ The system SHALL enforce inspection in the business cloud-function write paths a
 #### Scenario: Deploy a cloud function independently
 - **WHEN** `person`, `event`, or `item` is deployed from its own directory
 - **THEN** the package contains every `common` module required for content-security inspection
-
