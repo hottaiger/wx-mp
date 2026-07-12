@@ -15,5 +15,5 @@
 
 ## 4. Verification
 
-- [ ] 4.1 Extend CI to verify helper presence and equality in all three cloud-function packages.
-- [ ] 4.2 Run focused tests and `bash scripts/ci-build.sh`, then audit every change-spec scenario.
+- [x] 4.1 Extend CI to verify helper presence and equality in all three cloud-function packages.
+- [x] 4.2 Run focused tests and `bash scripts/ci-build.sh`, then audit every change-spec scenario.
