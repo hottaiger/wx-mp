@@ -1,7 +1,7 @@
 ## 1. Content-security core
 
-- [ ] 1.1 Add failing tests for text collection, WeChat result classification, and business-error mapping.
-- [ ] 1.2 Implement text and image inspection helpers and synchronize the three deployable copies.
+- [x] 1.1 Add failing tests for text collection, WeChat result classification, and business-error mapping.
+- [x] 1.2 Implement text and image inspection helpers and synchronize the three deployable copies.
 
 ## 2. Publishing-path integration
 
