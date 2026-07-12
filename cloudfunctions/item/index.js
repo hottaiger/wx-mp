@@ -2,7 +2,7 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
-const { withAuth, crud, errors } = require('./common/index.js');
+const { withAuth, crud, errors, contentSecurity } = require('./common/index.js');
 
 const _ = db.command;
 const COLLECTION = 'items';
@@ -96,6 +96,7 @@ async function createEntity(event, ctx) {
   if (payload.coverImage && !payload.coverImage.fileID) {
     throw Object.assign(new Error('coverImage.fileID 必填'), { code: errors.ERROR_CODES.VALIDATION });
   }
+  await contentSecurity.assertTextSafe({ cloud, openid: ctx.openid, payload });
   return crud.create(COLLECTION, payload, ctx.openid);
 }
 
@@ -103,10 +104,12 @@ async function updateEntity(event, ctx) {
   if (!event.id) {
     throw Object.assign(new Error('id required'), { code: errors.ERROR_CODES.VALIDATION });
   }
-  if (event.payload && event.payload.coverImage && !event.payload.coverImage.fileID) {
+  const payload = event.payload || {};
+  if (payload.coverImage && !payload.coverImage.fileID) {
     throw Object.assign(new Error('coverImage.fileID 必填'), { code: errors.ERROR_CODES.VALIDATION });
   }
-  return crud.update(COLLECTION, event.id, event.payload || {}, ctx.openid);
+  await contentSecurity.assertTextSafe({ cloud, openid: ctx.openid, payload });
+  return crud.update(COLLECTION, event.id, payload, ctx.openid);
 }
 
 async function removeEntity(event, ctx) {
