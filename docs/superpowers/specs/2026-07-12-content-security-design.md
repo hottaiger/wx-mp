@@ -1,66 +1,106 @@
-# 内容安全审核修复设计
+---
+comet_change: add-content-security-checks
+role: technical-design
+canonical_spec: openspec
+---
 
-## 目标
+# Content Security Technical Design
 
-所有可发布的人、事、物内容在写入数据库前调用微信内容安全 API。违规时仅向用户提示“所发布内容含违规信息”，不展示命中类型、风险等级或审核细节。
+## System Boundary
 
-## 范围
+The security boundary is the database-write edge inside `person`, `event`, and `item`. Every create/update handler validates input, inspects submitted content, and only then calls CRUD. The mini program remains responsible for presentation and upload ergonomics, not enforcement.
 
-- `person`：创建、编辑时校验可发布文本。
-- `event`：创建、编辑时校验可发布文本。
-- `item`：创建、编辑时校验可发布文本；存在 `coverImage.fileID` 时校验图片。
-- 删除、查询、统计、关联等不发布内容的操作不调用安全 API。
+```text
+capture/detail page
+        |
+        v
+wx.cloud.callFunction
+        |
+        v
+withAuth -> validate -> content security -> CRUD write
+                           | pass             |
+                           +------------------+
+                           | risky/failure
+                           v
+                     business error
+```
 
-## 方案
+## Module Design
 
-在各业务云函数内部、数据库写入前执行安全校验，保证校验无法被前端绕过。
+`cloudfunctions/common/contentSecurity.js` exports:
 
-每个云函数部署目录内包含独立的 `common/contentSecurity.js` 副本，符合微信云函数独立部署约束。模块负责：
+- `collectText(payload): string`: recursively collects trimmed user-authored strings, excludes system/media identifier fields, deduplicates values, and joins them for one API call.
+- `assertTextSafe({ cloud, openid, payload }): Promise<void>`: calls `cloud.openapi.security.msgSecCheck` with `version: 2`, `scene: 1`, current `openid`, and normalized content. Empty content is a no-op.
+- `assertImageSafe({ cloud, fileID, cloudPath }): Promise<void>`: downloads the cloud file, derives its supported MIME type, and calls `cloud.openapi.security.imgSecCheck` with `{ media: { contentType, value } }`.
+- `createContentSecurityError(kind): Error`: creates either `ERR_CONTENT_RISKY` or `ERR_CONTENT_SECURITY_UNAVAILABLE` without retaining raw WeChat response data.
 
-1. 汇总本次写入中用户可发布的文本字段，忽略空值与非字符串值。
-2. 调用微信 `security.msgSecCheck`，传入当前用户 `openid`、场景值及内容。
-3. 图片写入时，根据 `coverImage.fileID` 下载图片并调用微信图片内容安全 API。
-4. 将违规结果转换为统一业务错误，不向前端返回微信检测细节。
-5. API 调用失败时阻止写入，避免未经检测的内容发布。
+The file is copied byte-for-byte to `person/common/`, `event/common/`, and `item/common/`. Each local `common/index.js` exports it. CI compares hashes so independent deployment cannot omit or drift the helper.
 
-## 数据流
+## Text Selection
 
-前端提交 → 业务云函数鉴权 → 参数校验 → 内容安全校验 → 数据库写入 → 返回成功。
+The collector accepts nested objects and arrays. It includes strings and string-array entries, while excluding keys that represent identifiers or storage metadata:
 
-更新操作只校验本次提交的可发布字段；图片字段未变化时不重复校验。新建或替换图片时必须校验后才能写入。
+- `_id`, `_openid`
+- `fileID`, `cloudPath`, `tempFilePath`
 
-## 用户提示
+It ignores empty strings, numbers, booleans, nulls, and functions. This covers names, titles, notes, tags, traits, descriptions, and nested user-defined attributes without maintaining three fragile field allowlists.
 
-命中违规统一返回可识别错误码，前端统一展示：
+## Handler Integration
 
-`所发布内容含违规信息`
+`person` and `event`:
 
-不得展示标签、建议、风险级别、命中规则等检测信息。
+1. Validate required identifiers and fields.
+2. Call `assertTextSafe` with the submitted payload and authenticated `ctx.openid`.
+3. Call `crud.create` or `crud.update` only after inspection resolves.
 
-安全 API 不可用时展示普通发布失败提示，不伪装为违规命中。
+`item` performs the same text sequence. When `coverImage.fileID` is present:
 
-## 规格变更
+- Create: inspect the image.
+- Update: fetch the current item through `crud.getOne`; inspect only when the submitted file ID differs from the persisted file ID.
+- Removal (`coverImage: null`) or unchanged image: do not inspect.
 
-在 `openspec/specs/` 增加内容安全主规格，明确：
+Text collection excludes image identifiers, so media metadata is not sent to `msgSecCheck`.
 
-- 人、事、物创建和编辑均属于发布场景。
-- 文本与物品图片必须在写入前完成检测。
-- 违规提示文案固定且不泄露检测细节。
-- 检测失败不得继续写入。
+## Result and Error Semantics
 
-## 测试
+Text v2 behavior:
 
-- RED：创建/编辑人、事、物时未调用文本安全 API。
-- RED：创建/替换物品图片时未调用图片安全 API。
-- RED：命中违规后仍写入数据库或返回检测细节。
-- RED：安全 API 异常后仍写入数据库。
-- GREEN：上述测试通过，并执行 `bash scripts/ci-build.sh`。
+- `result.suggest === 'pass'`: continue.
+- `result.suggest === 'risky'` or `'review'`: throw `ERR_CONTENT_RISKY`.
+- Missing/unknown result, thrown API error, or non-zero API error: throw `ERR_CONTENT_SECURITY_UNAVAILABLE`.
 
-## 验收标准
+Synchronous image behavior:
 
-1. 人、事、物所有创建和编辑入口均在服务端写入前检测文本。
-2. 物品图片创建和替换入口均在服务端写入前检测图片。
-3. 任何入口均无法绕过云函数直接写数据库。
-4. 违规时小程序仅显示“所发布内容含违规信息”。
-5. 内容安全 API 失败时不写入数据。
-6. 云函数部署包内依赖完整，基础校验通过。
+- Successful `imgSecCheck`: continue.
+- A WeChat content-risk error code: throw `ERR_CONTENT_RISKY`.
+- Transport, download, quota, or unknown errors: throw `ERR_CONTENT_SECURITY_UNAVAILABLE`.
+
+The cloud function response wrapper returns only the business code and safe message. The client error map is authoritative:
+
+- `ERR_CONTENT_RISKY` -> `所发布内容含违规信息`
+- `ERR_CONTENT_SECURITY_UNAVAILABLE` -> `发布失败，请稍后重试`
+
+No raw label, strategy, suggestion, confidence, trace ID, or upstream message reaches the UI.
+
+## Image Constraints
+
+`wx.chooseMedia` requests compressed images. Before upload, the client uses `wx.getImageInfo` and rejects files above 1 MB or dimensions above 750 x 1334 pixels, matching the synchronous API limits. The cloud function still treats any unsupported image/API response as unavailable and does not write the item.
+
+## Test Design
+
+Tests use Node's built-in test runner and dependency-injected fakes:
+
+1. Pure collector tests cover nested fields, arrays, system-field exclusion, trimming, deduplication, and empty input.
+2. API adapter tests cover `pass`, `risky`, `review`, malformed results, thrown calls, image pass, image risk, and download failure.
+3. Handler tests prove each person/event/item create/update invokes text inspection before CRUD.
+4. Item tests prove image inspection occurs for create/new file ID and does not occur for unchanged/removal cases.
+5. Client mapping tests prove the exact risky message and generic unavailable message.
+6. CI validates all deployable copies, JavaScript syntax, OpenSpec structure, and the project build script.
+
+## Deployment and Rollback
+
+Deploy all three cloud functions before submitting the new mini-program build. Validate real-account access because `msgSecCheck` requires a recently active openid. Rollback restores the previous cloud-function and mini-program versions together; there is no data migration.
+
+## Future Migration
+
+Move images to `security.mediaCheckAsync` v2 only with a separate design that adds pending publication, a message-push receiver, trace-ID correlation, pass/risky state transitions, timeout handling, and storage cleanup.

@@ -1,0 +1,8 @@
+{
+  "openspec_proposal": "openspec/changes/add-content-security-checks/proposal.md",
+  "openspec_design": "openspec/changes/add-content-security-checks/design.md",
+  "openspec_tasks": "openspec/changes/add-content-security-checks/tasks.md",
+  "openspec_delta_spec": "openspec/changes/add-content-security-checks/specs/content-security/spec.md",
+  "handoff_context": "openspec/changes/add-content-security-checks/.comet/handoff/design-context.json",
+  "handoff_markdown": "openspec/changes/add-content-security-checks/.comet/handoff/design-context.md"
+}
