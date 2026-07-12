@@ -10,8 +10,8 @@
 
 ## 3. Mini-program behavior
 
-- [ ] 3.1 Add content-security business errors and map risky content only to `所发布内容含违规信息`.
-- [ ] 3.2 Add image compression and size validation before upload.
+- [x] 3.1 Add content-security business errors and map risky content only to `所发布内容含违规信息`.
+- [x] 3.2 Add image compression and size validation before upload.
 
 ## 4. Verification
 
