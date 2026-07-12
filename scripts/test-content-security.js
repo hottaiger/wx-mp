@@ -55,6 +55,20 @@ test('assertTextSafe fails closed for malformed and thrown calls', async () => {
   }
 });
 
+test('assertTextSafe fails closed for resolved non-zero API status', async () => {
+  const cloud = {
+    openapi: {
+      security: {
+        msgSecCheck: async () => ({ errCode: 45009, result: { suggest: 'pass' } }),
+      },
+    },
+  };
+  await assert.rejects(
+    assertTextSafe({ cloud, openid: 'o', payload: { name: 'x' } }),
+    (error) => error.code === 'ERR_CONTENT_SECURITY_UNAVAILABLE',
+  );
+});
+
 test('assertImageSafe downloads and checks the documented media object', async () => {
   const buffer = Buffer.from('image');
   let checked;
@@ -82,6 +96,17 @@ test('assertImageSafe classifies documented risk code', async () => {
   await assert.rejects(
     assertImageSafe({ cloud, fileID: 'cloud://image', cloudPath: 'items/image.jpg' }),
     (error) => error.code === 'ERR_CONTENT_RISKY' && !error.message.includes('risky content'),
+  );
+});
+
+test('assertImageSafe classifies resolved documented risk code', async () => {
+  const cloud = {
+    downloadFile: async () => ({ fileContent: Buffer.from('image') }),
+    openapi: { security: { imgSecCheck: async () => ({ errCode: 87014 }) } },
+  };
+  await assert.rejects(
+    assertImageSafe({ cloud, fileID: 'cloud://image', cloudPath: 'items/image.jpg' }),
+    (error) => error.code === 'ERR_CONTENT_RISKY',
   );
 });
 

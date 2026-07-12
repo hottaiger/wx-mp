@@ -34,6 +34,14 @@ function createContentSecurityError(kind) {
   );
 }
 
+function responseErrorCode(response) {
+  if (!response || typeof response !== 'object') return null;
+  const value = response.errCode === undefined ? response.errcode : response.errCode;
+  if (value === undefined || value === null || value === '') return null;
+  const code = Number(value);
+  return Number.isFinite(code) ? code : null;
+}
+
 async function assertTextSafe({ cloud, openid, payload }) {
   const content = collectText(payload);
   if (!content) return;
@@ -50,6 +58,10 @@ async function assertTextSafe({ cloud, openid, payload }) {
     throw createContentSecurityError('unavailable');
   }
 
+  const apiCode = responseErrorCode(response);
+  if (apiCode !== null && apiCode !== 0) {
+    throw createContentSecurityError('unavailable');
+  }
   const suggest = response && response.result && response.result.suggest;
   if (suggest === 'pass') return;
   if (suggest === 'risky' || suggest === 'review') {
@@ -79,7 +91,11 @@ async function assertImageSafe({ cloud, fileID, cloudPath }) {
     const response = await cloud.openapi.security.imgSecCheck({
       media: { contentType, value: downloaded.fileContent },
     });
-    if (!response || response.errCode !== 0) {
+    const apiCode = responseErrorCode(response);
+    if (apiCode === IMAGE_RISK_CODE) {
+      throw createContentSecurityError('risky');
+    }
+    if (apiCode !== 0) {
       throw createContentSecurityError('unavailable');
     }
   } catch (error) {
@@ -99,4 +115,5 @@ module.exports = {
   assertTextSafe,
   assertImageSafe,
   imageContentType,
+  responseErrorCode,
 };
