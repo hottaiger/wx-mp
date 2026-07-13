@@ -96,6 +96,12 @@ function loadPage({ consentValid = false, grantResult = true, revokeResult = tru
   delete require.cache[pageFile];
   try {
     require(pageFile);
+  } catch (error) {
+    global.wx = originalWx;
+    global.getApp = originalGetApp;
+    global.setTimeout = originalSetTimeout;
+    delete require.cache[pageFile];
+    throw error;
   } finally {
     Module._load = originalLoad;
     global.Page = originalPage;
@@ -207,6 +213,16 @@ test('主动勾选、写入失败和取消授权同步更新页面状态', () =>
     assert.equal(failed.calls.toasts[failed.calls.toasts.length - 1].title, '授权保存失败，请稍后重试');
   } finally {
     failed.restore();
+  }
+
+  const revokeFailed = loadPage({ consentValid: true, revokeResult: false });
+  try {
+    revokeFailed.page.data.privacyAgreed = true;
+    revokeFailed.page.onPrivacyConsentChange({ detail: { value: [] } });
+    assert.equal(revokeFailed.page.data.privacyAgreed, false);
+    assert.equal(revokeFailed.calls.toasts[revokeFailed.calls.toasts.length - 1].title, '授权撤回失败，请稍后重试');
+  } finally {
+    revokeFailed.restore();
   }
 });
 

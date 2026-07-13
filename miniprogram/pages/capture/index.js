@@ -70,8 +70,11 @@ Page({
     const values = e && e.detail && e.detail.value;
     const agreed = Array.isArray(values) && values.includes('agreed');
     if (!agreed) {
-      privacyConsent.revokeConsent();
+      const revoked = privacyConsent.revokeConsent();
       this.setData({ privacyAgreed: false });
+      if (!revoked) {
+        wx.showToast({ title: '授权撤回失败，请稍后重试', icon: 'none' });
+      }
       return;
     }
     const saved = privacyConsent.grantConsent();

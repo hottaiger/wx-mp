@@ -6,6 +6,13 @@ const AGREEMENTS = {
     title: '用户服务协议',
     sections: [
       {
+        title: '生效日期与服务提供者',
+        paragraphs: [
+          '本协议自 2026 年 7 月 13 日起生效。服务提供者为“微录WL”的微信认证主体，具体认证信息以微信小程序“关于”页面公示为准。',
+          '如需咨询、投诉或行使数据权利，可通过微信客户端内本小程序的“反馈与投诉”入口联系我们。',
+        ],
+      },
+      {
         title: '一、服务内容',
         paragraphs: [
           '微录用于记录和管理用户主动填写的人、事、物信息，建立实体关联并生成周复盘；提醒仅在用户主动开启时提供。',
@@ -35,11 +42,35 @@ const AGREEMENTS = {
           '服务内容或数据处理规则发生变化时，我们将更新协议版本；旧版本授权会自动失效，用户需重新阅读并同意。',
         ],
       },
+      {
+        title: '六、责任边界',
+        paragraphs: [
+          '我们将采取合理措施维护服务和数据安全，但不对因不可抗力、微信平台或云服务故障、用户自身原因造成的服务中断承担超出法律规定的责任。',
+        ],
+      },
+      {
+        title: '七、服务终止',
+        paragraphs: [
+          '用户可以停止使用本服务并删除记录。用户严重违反法律法规或本协议时，我们可以依法限制或终止相关服务。',
+        ],
+      },
+      {
+        title: '八、争议处理',
+        paragraphs: [
+          '本协议的订立、履行与解释适用中华人民共和国法律。发生争议时，双方应先友好协商；协商不成的，依法向有管辖权的人民法院解决。',
+        ],
+      },
     ],
   },
   privacy: {
     title: '隐私政策',
     sections: [
+      {
+        title: '生效日期与运营主体',
+        paragraphs: [
+          '本政策自 2026 年 7 月 13 日起生效。运营主体为“微录WL”的微信认证主体，具体认证信息以微信小程序“关于”页面公示为准。',
+        ],
+      },
       {
         title: '一、收集的数据',
         paragraphs: [
@@ -74,7 +105,8 @@ const AGREEMENTS = {
       {
         title: '六、用户控制',
         paragraphs: [
-          '用户可以查看、修改或删除记录，也可以取消授权。取消授权后停止新增数据上传，已保存记录仍可按现有删除功能处理。',
+          '用户可以查询、更正或删除记录，也可以取消授权。取消授权后停止新增数据上传，已保存记录仍可按现有删除功能处理。',
+          '如需行使其他个人信息权利，可通过微信客户端内本小程序的“反馈与投诉”入口提交请求。',
         ],
       },
       {
@@ -127,7 +159,15 @@ function revokeConsent(storage = defaultStorage()) {
     storage.removeStorageSync(CONSENT_STORAGE_KEY);
     return true;
   } catch (err) {
-    return false;
+    try {
+      storage.setStorageSync(CONSENT_STORAGE_KEY, {
+        version: `revoked:${CONSENT_VERSION}`,
+        agreedAt: 0,
+      });
+      return true;
+    } catch (fallbackError) {
+      return false;
+    }
   }
 }
 
