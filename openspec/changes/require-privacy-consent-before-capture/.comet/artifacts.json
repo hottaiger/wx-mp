@@ -1,0 +1,8 @@
+{
+  "openspec_proposal": "openspec/changes/require-privacy-consent-before-capture/proposal.md",
+  "openspec_design": "openspec/changes/require-privacy-consent-before-capture/design.md",
+  "openspec_tasks": "openspec/changes/require-privacy-consent-before-capture/tasks.md",
+  "openspec_delta_spec": "openspec/changes/require-privacy-consent-before-capture/specs/privacy-consent/spec.md",
+  "handoff_context": "openspec/changes/require-privacy-consent-before-capture/.comet/handoff/design-context.json",
+  "handoff_markdown": "openspec/changes/require-privacy-consent-before-capture/.comet/handoff/design-context.md"
+}
