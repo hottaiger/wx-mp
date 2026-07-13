@@ -4,12 +4,12 @@
   "mode": "compact",
   "canonical_spec": "openspec",
   "generated_by": "comet-handoff.sh",
-  "context_hash": "f2c9c266f3b94cfffe4ce023cbe93115dca9b63ac5a928565e8bc5aecc4125cc",
+  "context_hash": "cde3731f42b2c1e1ba94ad7c77daee24112a6d2bfb8a6346a4dd8a3f6334e0a4",
   "files": [
     { "path": "openspec/changes/require-privacy-consent-before-capture/proposal.md", "sha256": "3620c59be31af33d3f79e1521f50875a7516297dbf310dd252952dc9dc902f5f" },
-    { "path": "openspec/changes/require-privacy-consent-before-capture/design.md", "sha256": "f655d0403282c06a5a96f4ef9716a60ea93ca1b5dce9f371f51a4e82a8c9a470" },
+    { "path": "openspec/changes/require-privacy-consent-before-capture/design.md", "sha256": "d5ca584d087a0e7209afed42bbdb844862a49123d8f556f57e3abdcdde29fb78" },
     { "path": "openspec/changes/require-privacy-consent-before-capture/tasks.md", "sha256": "7f62498b70ce45ea312e466bbb3ff320bcfe8d56cc7f75ec0a4266619b5b7076" },
-    { "path": "openspec/changes/require-privacy-consent-before-capture/specs/privacy-consent/spec.md", "sha256": "35638d6c39b0005b2e56ebe7e037769694ec35cb3378faf822710147e895b761" },
-    { "path": "openspec/changes/require-privacy-consent-before-capture/specs/quick-capture/spec.md", "sha256": "00d3671b6582b8e4f8af5e93b27aab4013be82cc974bc84e6a368e49ac84ff15" }
+    { "path": "openspec/changes/require-privacy-consent-before-capture/specs/privacy-consent/spec.md", "sha256": "bb6488e0237942c657bc08183ad53c264e827e617a60d71ca5940bb8cc11e1fe" },
+    { "path": "openspec/changes/require-privacy-consent-before-capture/specs/quick-capture/spec.md", "sha256": "d0194af674e57e93c2fde0f905dc3e6ef3da80c9aaa404db99f4115229b1c537" }
   ]
 }

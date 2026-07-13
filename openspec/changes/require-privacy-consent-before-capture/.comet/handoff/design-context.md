@@ -3,7 +3,7 @@
 - Change: require-privacy-consent-before-capture
 - Phase: design
 - Mode: compact
-- Context hash: f2c9c266f3b94cfffe4ce023cbe93115dca9b63ac5a928565e8bc5aecc4125cc
+- Context hash: cde3731f42b2c1e1ba94ad7c77daee24112a6d2bfb8a6346a4dd8a3f6334e0a4
 
 Generated-by: comet-handoff.sh
 
@@ -51,7 +51,7 @@ OpenSpec remains the canonical capability spec. This handoff is a deterministic,
 
 - Source: openspec/changes/require-privacy-consent-before-capture/design.md
 - Lines: 1-56
-- SHA256: f655d0403282c06a5a96f4ef9716a60ea93ca1b5dce9f371f51a4e82a8c9a470
+- SHA256: d5ca584d087a0e7209afed42bbdb844862a49123d8f556f57e3abdcdde29fb78
 
 ```md
 ## Context
@@ -86,9 +86,9 @@ OpenSpec remains the canonical capability spec. This handoff is a deterministic,
 
 授权记录保存 `{ version, agreedAt }`。读取时仅接受当前版本；协议升级后旧授权自动失效，用户必须重新确认。
 
-### 3. 授权拦截位于 `onSubmit` 的第一条业务路径
+### 3. 使用统一授权守卫覆盖所有数据外传入口
 
-`onSubmit` 在表单校验和任何云函数调用前检查 `privacyAgreed`。未同意时仅提示“请先阅读并同意用户服务协议和隐私政策”，不进入 loading、订阅消息授权、图片上传或业务云函数调用。
+页面提供单一 `ensurePrivacyConsent()` 守卫，`onChooseItemImage` 在选择并上传图片前调用，`onSubmit` 在表单校验和任何云函数调用前调用。守卫同时校验页面状态与当前版本的持久化授权记录，避免状态过期或单入口漏检。未同意时提示“请先阅读并同意用户服务协议和隐私政策”，不进入图片上传、loading、订阅消息授权或业务云函数调用。
 
 ### 4. 协议正文明确实际数据处理边界
 
@@ -137,8 +137,8 @@ OpenSpec remains the canonical capability spec. This handoff is a deterministic,
 ## openspec/changes/require-privacy-consent-before-capture/specs/privacy-consent/spec.md
 
 - Source: openspec/changes/require-privacy-consent-before-capture/specs/privacy-consent/spec.md
-- Lines: 1-41
-- SHA256: 35638d6c39b0005b2e56ebe7e037769694ec35cb3378faf822710147e895b761
+- Lines: 1-45
+- SHA256: bb6488e0237942c657bc08183ad53c264e827e617a60d71ca5940bb8cc11e1fe
 
 ```md
 ## ADDED Requirements
@@ -160,6 +160,10 @@ OpenSpec remains the canonical capability spec. This handoff is a deterministic,
 #### Scenario: 未同意时保存
 - **WHEN** 用户未勾选协议授权并点击“保存”
 - **THEN** 系统提示用户先阅读并同意协议，且不调用任何业务云函数
+
+#### Scenario: 未同意时上传图片
+- **WHEN** 用户未勾选协议授权并点击物品图片上传入口
+- **THEN** 系统提示用户先阅读并同意协议，且不选择图片、不向云存储上传文件
 
 #### Scenario: 同意后保存
 - **WHEN** 用户主动勾选协议授权并提交合法录入内容
@@ -188,14 +192,14 @@ OpenSpec remains the canonical capability spec. This handoff is a deterministic,
 ## openspec/changes/require-privacy-consent-before-capture/specs/quick-capture/spec.md
 
 - Source: openspec/changes/require-privacy-consent-before-capture/specs/quick-capture/spec.md
-- Lines: 1-16
-- SHA256: 00d3671b6582b8e4f8af5e93b27aab4013be82cc974bc84e6a368e49ac84ff15
+- Lines: 1-20
+- SHA256: d0194af674e57e93c2fde0f905dc3e6ef3da80c9aaa404db99f4115229b1c537
 
 ```md
 ## MODIFIED Requirements
 
 ### Requirement: 提交校验
-系统 SHALL 提交前先确认用户已主动同意当前版本的《用户服务协议》和《隐私政策》，再校验必填项（name / title 必填）；任一校验失败时显示提示，提交过程中按钮置 disabled 防重复提交。未获得隐私授权时 MUST NOT 调用业务云函数或传输录入数据。
+系统 SHALL 在图片上传和提交前确认用户已主动同意当前版本的《用户服务协议》和《隐私政策》，提交时再校验必填项（name / title 必填）；任一校验失败时显示提示，提交过程中按钮置 disabled 防重复提交。未获得隐私授权时 MUST NOT 上传图片、调用业务云函数或传输录入数据。
 
 #### Scenario: 未同意协议
 - **WHEN** 用户未同意当前版本协议并点击提交
@@ -204,6 +208,10 @@ OpenSpec remains the canonical capability spec. This handoff is a deterministic,
 #### Scenario: 缺标题
 - **WHEN** 用户已同意协议但 event 表单未填 title
 - **THEN** 系统提示“请填写标题”，且不调用业务云函数
+
+#### Scenario: 未同意协议时选择图片
+- **WHEN** 用户未同意当前版本协议并点击物品图片上传入口
+- **THEN** 系统提示先阅读并同意协议，且云存储上传次数为 0
 
 #### Scenario: 防止重复提交
 - **WHEN** 用户已同意协议并快速双击合法表单的提交按钮
