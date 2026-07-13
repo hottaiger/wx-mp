@@ -20,6 +20,8 @@ node --test scripts/test-content-security.js
 node --test scripts/test-content-security-handlers.js
 node --test scripts/test-content-security-client.js
 node --test scripts/test-content-security-config.js
+node --test scripts/test-privacy-consent.js
+node --test scripts/test-capture-privacy-consent.js
 for fn in person event item; do
   cmp -s cloudfunctions/common/contentSecurity.js "cloudfunctions/$fn/common/contentSecurity.js" || {
     echo "CONTENT_SECURITY_COPY_MISMATCH: $fn" >&2
