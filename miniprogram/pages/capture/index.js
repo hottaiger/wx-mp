@@ -2,6 +2,9 @@
 const cloud = require('../../utils/cloud.js');
 const timeParser = require('../../utils/time-parser.js');
 const itemImage = require('../../utils/item-image.js');
+const privacyConsent = require('../../utils/privacy-consent.js');
+
+const PRIVACY_PROMPT = '请先阅读并同意用户服务协议和隐私政策';
 
 const TABS = [
   { key: 'event', label: '事' },
@@ -39,14 +42,63 @@ Page({
     reminderCustom: '',
     reminderPresets: ['5 分钟后', '20 分钟后', '1 小时后', '明早 9 点', '明晚 9 点'],
     submitting: false,
+    privacyAgreed: false,
+    privacyDialogVisible: false,
+    privacyDialogTitle: '',
+    privacyDialogSections: [],
   },
 
   onBack() { wx.navigateBack(); },
 
   onLoad(opts) {
     const tab = TABS.find((t) => t.key === opts.type) ? opts.type : 'event';
-    this.setData({ activeTab: tab });
+    this.setData({
+      activeTab: tab,
+      privacyAgreed: privacyConsent.isConsentValid(),
+    });
   },
+
+  ensurePrivacyConsent() {
+    const valid = this.data.privacyAgreed && privacyConsent.isConsentValid();
+    if (valid) return true;
+    this.setData({ privacyAgreed: false });
+    wx.showToast({ title: PRIVACY_PROMPT, icon: 'none' });
+    return false;
+  },
+
+  onPrivacyConsentChange(e) {
+    const values = e && e.detail && e.detail.value;
+    const agreed = Array.isArray(values) && values.includes('agreed');
+    if (!agreed) {
+      const revoked = privacyConsent.revokeConsent();
+      this.setData({ privacyAgreed: false });
+      if (!revoked) {
+        wx.showToast({ title: '授权撤回失败，请稍后重试', icon: 'none' });
+      }
+      return;
+    }
+    const saved = privacyConsent.grantConsent();
+    this.setData({ privacyAgreed: saved });
+    if (!saved) {
+      wx.showToast({ title: '授权保存失败，请稍后重试', icon: 'none' });
+    }
+  },
+
+  onOpenAgreement(e) {
+    const agreement = privacyConsent.getAgreement(e.currentTarget.dataset.type);
+    if (!agreement) return;
+    this.setData({
+      privacyDialogVisible: true,
+      privacyDialogTitle: agreement.title,
+      privacyDialogSections: agreement.sections,
+    });
+  },
+
+  onClosePrivacyDialog() {
+    this.setData({ privacyDialogVisible: false });
+  },
+
+  noop() {},
 
   onTabTap(e) {
     this.setData({ activeTab: e.currentTarget.dataset.key });
@@ -74,6 +126,7 @@ Page({
   },
 
   async onChooseItemImage() {
+    if (!this.ensurePrivacyConsent()) return;
     try {
       wx.showLoading({ title: '上传中...' });
       const file = await itemImage.chooseOneImage();
@@ -175,6 +228,7 @@ Page({
 
   async onSubmit() {
     if (this.data.submitting) return;
+    if (!this.ensurePrivacyConsent()) return;
     const r = this.validateAndBuild();
     if (r.error) {
       wx.showToast({ title: r.error, icon: 'none' });

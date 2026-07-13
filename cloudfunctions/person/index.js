@@ -2,7 +2,7 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
-const { withAuth, crud, errors } = require('./common/index.js');
+const { withAuth, crud, errors, contentSecurity } = require('./common/index.js');
 
 const _ = db.command;
 const COLLECTION = 'persons';
@@ -92,6 +92,7 @@ async function createEntity(event, ctx) {
   if (!payload.name && !payload.title) {
     throw Object.assign(new Error('name/title 必填'), { code: errors.ERROR_CODES.VALIDATION });
   }
+  await contentSecurity.assertTextSafe({ cloud, openid: ctx.openid, payload });
   return crud.create(COLLECTION, payload, ctx.openid);
 }
 
@@ -99,7 +100,9 @@ async function updateEntity(event, ctx) {
   if (!event.id) {
     throw Object.assign(new Error('id required'), { code: errors.ERROR_CODES.VALIDATION });
   }
-  return crud.update(COLLECTION, event.id, event.payload || {}, ctx.openid);
+  const payload = event.payload || {};
+  await contentSecurity.assertTextSafe({ cloud, openid: ctx.openid, payload });
+  return crud.update(COLLECTION, event.id, payload, ctx.openid);
 }
 
 async function removeEntity(event, ctx) {

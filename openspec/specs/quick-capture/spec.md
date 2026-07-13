@@ -18,14 +18,22 @@ TBD - created by archiving change init-weilu-mvp. Update Purpose after archive.
 - **THEN** 表单字段替换为事件字段
 
 ### Requirement: 提交校验
-系统 SHALL 提交前校验必填项（name / title 必填），校验失败显示行内错误；提交过程中按钮置 disabled 防重复提交。
+系统 SHALL 在图片上传和提交前确认用户已主动同意当前版本的《用户服务协议》和《隐私政策》，提交时再校验必填项（name / title 必填）；任一校验失败时显示提示，提交过程中按钮置 disabled 防重复提交。未获得隐私授权时 MUST NOT 上传图片、调用业务云函数或传输录入数据。
+
+#### Scenario: 未同意协议
+- **WHEN** 用户未同意当前版本协议并点击提交
+- **THEN** 系统提示“请先阅读并同意用户服务协议和隐私政策”，且业务云函数调用次数为 0
 
 #### Scenario: 缺标题
-- **WHEN** event 表单未填 title
-- **THEN** 提交按钮禁用，「请填写标题」提示
+- **WHEN** 用户已同意协议但 event 表单未填 title
+- **THEN** 系统提示“请填写标题”，且不调用业务云函数
+
+#### Scenario: 未同意协议时选择图片
+- **WHEN** 用户未同意当前版本协议并点击物品图片上传入口
+- **THEN** 系统提示先阅读并同意协议，且云存储上传次数为 0
 
 #### Scenario: 防止重复提交
-- **WHEN** 用户快速双击提交
+- **WHEN** 用户已同意协议并快速双击合法表单的提交按钮
 - **THEN** 第二次点击被 disabled 拦截，集合只新增 1 条
 
 ### Requirement: 提交后 loading 与成功反馈

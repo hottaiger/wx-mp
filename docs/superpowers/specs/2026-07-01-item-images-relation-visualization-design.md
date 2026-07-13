@@ -2,6 +2,8 @@
 change: add-item-images-and-relation-visualization
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-08-add-item-images-and-relation-visualization
+status: final
 ---
 
 # 物品图片与关联可视化设计
