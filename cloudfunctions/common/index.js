@@ -3,4 +3,5 @@ module.exports = {
   errors: require('./errors.js'),
   withAuth: require('./withAuth.js').withAuth,
   crud: require('./crud.js'),
+  contentSecurity: require('./contentSecurity.js'),
 };

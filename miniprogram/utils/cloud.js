@@ -3,8 +3,14 @@ const ERROR_MAP = {
   ERR_UNAUTHORIZED: '未登录或登录已过期',
   ERR_NOT_FOUND: '记录不存在',
   ERR_VALIDATION: '参数校验失败',
+  ERR_CONTENT_RISKY: '所发布内容含违规信息',
+  ERR_CONTENT_SECURITY_UNAVAILABLE: '发布失败，请稍后重试',
   ERR_INTERNAL: '服务异常，请稍后重试',
 };
+
+function errorMessage(code) {
+  return ERROR_MAP[code] || '请求失败';
+}
 
 function call(name, data) {
   return new Promise((resolve, reject) => {
@@ -16,7 +22,7 @@ function call(name, data) {
           return;
         }
         if (result.code && result.code !== 'OK') {
-          const message = result.message || ERROR_MAP[result.code] || '请求失败';
+          const message = ERROR_MAP[result.code] || result.message || '请求失败';
           reject(Object.assign(new Error(message), { code: result.code, raw: result }));
           return;
         }
@@ -42,4 +48,4 @@ function call(name, data) {
   });
 }
 
-module.exports = { call };
+module.exports = { call, errorMessage };

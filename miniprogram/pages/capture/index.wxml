@@ -154,6 +154,31 @@
 
   <!-- 浮动提交 -->
   <view class="dock">
+    <checkbox-group class="privacy-consent" bindchange="onPrivacyConsentChange">
+      <label class="privacy-consent__label">
+        <checkbox value="agreed" checked="{{privacyAgreed}}" color="#2F4A3A" />
+        <text>我已阅读并同意</text>
+      </label>
+      <text class="privacy-consent__link" data-type="service" catchtap="onOpenAgreement">《用户服务协议》</text>
+      <text>和</text>
+      <text class="privacy-consent__link" data-type="privacy" catchtap="onOpenAgreement">《隐私政策》</text>
+    </checkbox-group>
     <view class="dock__btn {{submitting ? 'dock__btn--disabled' : ''}}" hover-class="{{submitting ? '' : 'press'}}" bindtap="onSubmit">保存</view>
+  </view>
+
+  <view class="privacy-dialog" wx:if="{{privacyDialogVisible}}" catchtouchmove="noop">
+    <view class="privacy-dialog__mask" bindtap="onClosePrivacyDialog"></view>
+    <view class="privacy-dialog__panel">
+      <view class="privacy-dialog__head">
+        <text class="privacy-dialog__title">{{privacyDialogTitle}}</text>
+        <view class="privacy-dialog__close" bindtap="onClosePrivacyDialog">×</view>
+      </view>
+      <scroll-view class="privacy-dialog__body" scroll-y>
+        <view class="privacy-dialog__section" wx:for="{{privacyDialogSections}}" wx:key="title">
+          <view class="privacy-dialog__section-title">{{item.title}}</view>
+          <view class="privacy-dialog__paragraph" wx:for="{{item.paragraphs}}" wx:key="*this" wx:for-item="paragraph">{{paragraph}}</view>
+        </view>
+      </scroll-view>
+    </view>
   </view>
 </view>

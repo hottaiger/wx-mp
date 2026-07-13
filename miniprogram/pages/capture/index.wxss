@@ -1,4 +1,4 @@
-.page { padding: 0 var(--s-3) 220rpx; min-height: 100vh; }
+.page { padding: 0 var(--s-3) 280rpx; min-height: 100vh; }
 
 .head { display: flex; align-items: center; padding: var(--s-4) 0 var(--s-3); }
 .head__back { width: 64rpx; height: 64rpx; border-radius: 50%; background: var(--bg-elevated); border: 1rpx solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 44rpx; color: var(--ink-1); }
@@ -58,3 +58,19 @@
 .dock { position: fixed; left: 0; right: 0; bottom: 0; padding: var(--s-3) var(--s-3) calc(var(--s-4) + env(safe-area-inset-bottom, 0)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
 .dock__btn { background: var(--brand); color: #fff; text-align: center; padding: 28rpx 0; border-radius: var(--r-pill); font-size: 32rpx; font-weight: 500; box-shadow: var(--sh-2); }
 .dock__btn--disabled { background: var(--ink-4); box-shadow: none; }
+
+.privacy-consent { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 18rpx; color: var(--ink-3); font-size: 22rpx; line-height: 1.6; }
+.privacy-consent__label { display: flex; align-items: center; }
+.privacy-consent__label checkbox { transform: scale(0.72); transform-origin: center; }
+.privacy-consent__link { color: var(--brand); }
+
+.privacy-dialog { position: fixed; inset: 0; z-index: 100; display: flex; align-items: flex-end; }
+.privacy-dialog__mask { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); }
+.privacy-dialog__panel { position: relative; width: 100%; max-height: 80vh; padding: var(--s-3); padding-bottom: calc(var(--s-4) + env(safe-area-inset-bottom, 0)); border-radius: var(--r-md) var(--r-md) 0 0; background: var(--bg-elevated); }
+.privacy-dialog__head { display: flex; align-items: center; padding-bottom: var(--s-3); border-bottom: 1rpx solid var(--line); }
+.privacy-dialog__title { flex: 1; color: var(--ink-1); font-size: 32rpx; font-weight: 600; }
+.privacy-dialog__close { padding: 8rpx 16rpx; color: var(--ink-3); font-size: 40rpx; }
+.privacy-dialog__body { height: 60vh; }
+.privacy-dialog__section { padding-top: var(--s-3); }
+.privacy-dialog__section-title { margin-bottom: var(--s-2); color: var(--ink-1); font-size: 28rpx; font-weight: 600; }
+.privacy-dialog__paragraph { margin-bottom: var(--s-2); color: var(--ink-2); font-size: 26rpx; line-height: 1.7; }
