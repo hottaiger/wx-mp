@@ -185,6 +185,9 @@ Page({
         try {
           await cloud.call(that.data.type, { action: 'remove', id: that.data.id });
           wx.showToast({ title: '已删除', icon: 'success' });
+          const pages = getCurrentPages();
+          const previousPage = pages[pages.length - 2];
+          if (previousPage) previousPage._needRefresh = true;
           setTimeout(() => wx.navigateBack(), 600);
         } catch (err) {
           wx.showToast({ title: err.message || '删除失败', icon: 'none' });

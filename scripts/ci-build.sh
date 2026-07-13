@@ -15,6 +15,7 @@ node -e "JSON.parse(require('fs').readFileSync('miniprogram/app.json'))"
 node scripts/test-relation-view.js
 node scripts/test-relation-rules.js
 node scripts/test-relation-refresh.js
+node --test scripts/test-detail-delete-refresh.js
 node scripts/test-delete-query.js
 node --test scripts/test-content-security.js
 node --test scripts/test-content-security-handlers.js

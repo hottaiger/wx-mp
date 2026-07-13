@@ -1,0 +1,3 @@
+{"sequence":1,"timestamp":"2026-07-13T05:11:46.548Z","type":"run_started","runId":"34abee53-9b54-43e8-a393-1890d4444828","data":{"skill":"comet-classic","skillVersion":"1","skillHash":"e211dc93b4bbc218965022f6d64f54a26e2240bd45b8bf6e1321ceb96775a3a3"}}
+{"sequence":2,"timestamp":"2026-07-13T05:11:46.548Z","type":"state_migrated","runId":"34abee53-9b54-43e8-a393-1890d4444828","data":{"kind":"classic","migrationVersion":1,"profile":"hotfix","source":"pre-migration"}}
+{"sequence":3,"timestamp":"2026-07-13T05:11:46.564Z","type":"state_transitioned","runId":"34abee53-9b54-43e8-a393-1890d4444828","data":{"kind":"classic","fromStep":"hotfix.open","toStep":"hotfix.build.execute","event":"open-complete","phase":"open","source":"comet-guard"}}
