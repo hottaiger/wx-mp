@@ -18,7 +18,7 @@ verification_report: docs/superpowers/reports/2026-07-13-require-privacy-consent
 branch_status: handled
 created_at: 2026-07-13
 verified_at: 2026-07-13
-archived: false
+archived: true
 direct_override: null
 handoff_context: openspec/changes/require-privacy-consent-before-capture/.comet/handoff/design-context.json
 handoff_hash: cde3731f42b2c1e1ba94ad7c77daee24112a6d2bfb8a6346a4dd8a3f6334e0a4

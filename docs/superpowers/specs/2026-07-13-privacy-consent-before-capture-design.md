@@ -2,6 +2,8 @@
 comet_change: require-privacy-consent-before-capture
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-13-require-privacy-consent-before-capture
+status: final
 ---
 
 # 录入前隐私授权技术设计
@@ -136,3 +138,4 @@ revokeConsent(storage)
 ## 8. 发布约束
 
 代码内协议不能替代微信公众平台后台的《小程序用户隐私保护指引》。发布人员必须确保后台指引与实际代码收集的数据一致，尤其是“选中的照片或视频信息”和云开发存储用途。
+

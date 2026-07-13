@@ -2,6 +2,7 @@
 change: require-privacy-consent-before-capture
 design-doc: docs/superpowers/specs/2026-07-13-privacy-consent-before-capture-design.md
 base-ref: a51cecc17c4d0e354300451465c139cb57ff156e
+archived-with: 2026-07-13-require-privacy-consent-before-capture
 ---
 
 # 录入前隐私授权 Implementation Plan
@@ -26,6 +27,7 @@ base-ref: a51cecc17c4d0e354300451465c139cb57ff156e
 - 协议正文必须覆盖姓名、事项、物品、标签、备注、时间、属性、可选图片、提醒信息，以及使用目的、处理方式、存储位置、使用范围和用户控制。
 - 代码内协议不能替代微信公众平台后台的《小程序用户隐私保护指引》；发布前须人工核对后台声明包含“选中的照片或视频信息”及云开发存储用途。
 
+archived-with: 2026-07-13-require-privacy-consent-before-capture
 ---
 
 ## 文件结构
@@ -622,3 +624,4 @@ git commit -m "test: verify privacy consent workflow"
 - [x] 取消授权后本地记录被删除，下一次图片或保存操作重新被拦截。
 - [x] 两份协议均可在不离开录入页、不丢失表单内容的情况下打开、滚动和关闭。
 - [x] 微信公众平台后台隐私保护指引已与实际数据类型及云开发用途逐项一致。
+
