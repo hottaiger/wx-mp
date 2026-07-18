@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: build
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,12 +13,12 @@ auto_transition: true
 base_ref: c33457ac3c3b571b910f98ac20a188af71766b45
 design_doc: null
 plan: null
-verify_result: pending
-verification_report: null
-branch_status: pending
+verify_result: pass
+verification_report: docs/superpowers/reports/2026-07-18-fix-privacy-consent-tap-through-verify.md
+branch_status: handled
 created_at: 2026-07-18
-verified_at: null
-archive_confirmation: null
+verified_at: 2026-07-18
+archive_confirmation: pending
 archived: false
 direct_override: null
 handoff_context: null
