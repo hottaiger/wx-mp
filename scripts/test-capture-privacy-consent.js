@@ -3,8 +3,10 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const Module = require('node:module');
 const path = require('node:path');
+const fs = require('node:fs');
 
 const pageFile = path.resolve(__dirname, '../miniprogram/pages/capture/index.js');
+const pageTemplateFile = path.resolve(__dirname, '../miniprogram/pages/capture/index.wxml');
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -238,4 +240,9 @@ test('协议弹层按类型展示并可关闭', () => {
   } finally {
     fixture.restore();
   }
+});
+
+test('隐私授权确认区消费点击事件，避免穿透到底部保存按钮', () => {
+  const template = fs.readFileSync(pageTemplateFile, 'utf8');
+  assert.match(template, /<checkbox-group class="privacy-consent" catchtap="noop" bindchange="onPrivacyConsentChange">/);
 });
