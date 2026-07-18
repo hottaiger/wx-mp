@@ -1,2 +1,5 @@
 .gitnexus
-.comet/config.yaml
+# comet
+.comet
+# node_modules
+node_modules
