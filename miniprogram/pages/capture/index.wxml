@@ -154,7 +154,7 @@
 
   <!-- 浮动提交 -->
   <view class="dock">
-    <checkbox-group class="privacy-consent" bindchange="onPrivacyConsentChange">
+    <checkbox-group class="privacy-consent" catchtap="noop" bindchange="onPrivacyConsentChange">
       <label class="privacy-consent__label">
         <checkbox value="agreed" checked="{{privacyAgreed}}" color="#2F4A3A" />
         <text>我已阅读并同意</text>
