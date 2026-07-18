@@ -4,7 +4,7 @@
 TBD - created by archiving change require-privacy-consent-before-capture. Update Purpose after archive.
 ## Requirements
 ### Requirement: 协议内容告知
-系统 SHALL 在“记一笔”录入页提供可访问的《用户服务协议》和《隐私政策》，隐私政策 MUST 明确说明收集的数据类型、使用目的、处理方式、存储位置和使用范围。
+系统 SHALL 在“记一笔”录入页提供可访问的《用户服务协议》和《隐私政策》，隐私政策 MUST 明确说明收集的数据类型、使用目的、处理方式、存储位置和使用范围。协议确认区及协议入口的点击 MUST NOT 触发录入保存。
 
 #### Scenario: 查看用户服务协议
 - **WHEN** 用户点击《用户服务协议》
@@ -13,6 +13,10 @@ TBD - created by archiving change require-privacy-consent-before-capture. Update
 #### Scenario: 查看隐私政策
 - **WHEN** 用户点击《隐私政策》
 - **THEN** 系统展示包含人、事、物、图片和提醒数据处理说明的完整隐私政策正文
+
+#### Scenario: 切换协议授权
+- **WHEN** 用户点击协议确认区的复选框或“我已阅读并同意”文本
+- **THEN** 系统仅更新授权状态，且不触发录入保存、订阅授权或业务云函数调用
 
 ### Requirement: 明确同意后方可收集数据
 系统 MUST 默认不勾选隐私授权，并且只有用户主动同意当前版本的《用户服务协议》和《隐私政策》后，才允许向业务云函数传输录入数据。
